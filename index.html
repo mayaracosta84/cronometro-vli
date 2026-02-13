@@ -452,10 +452,11 @@
         .modal-content { 
             background: white; 
             border-radius: 20px; 
-            padding: 24px 24px 120px 24px; /* Padding-bottom GIGANTE para garantir scroll */
+            padding: 24px; 
+            padding-bottom: 190px; /* EXTRA para mobile - SUPER SEGURO */
             max-width: 100%; 
             width: 100%; 
-            max-height: 80vh; /* Reduzido ainda mais */
+            max-height: 72vh; /* Mais espaço na tela */
             overflow-y: scroll; /* FORÇA scroll sempre */
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
@@ -472,10 +473,26 @@
             flex: 1;
         }
         
-        @media (min-width: 768px) {
+        /* Tablet */
+        @media (min-width: 768px) and (max-width: 1023px) {
             .modal-content { 
                 max-width: 600px;
-                padding: 32px 32px 120px 32px;
+                padding: 32px;
+                padding-bottom: 180px;
+                max-height: 80vh;
+            }
+            .modal-body {
+                padding: 32px;
+            }
+        }
+        
+        /* Desktop */
+        @media (min-width: 1024px) {
+            .modal-content { 
+                max-width: 600px;
+                padding: 32px;
+                padding-bottom: 150px;
+                max-height: 85vh;
             }
             .modal-body {
                 padding: 32px;
@@ -509,15 +526,25 @@
             left: 0;
             right: 0;
             background: white;
-            padding: 16px 24px 24px 24px;
+            padding: 16px 24px calc(24px + env(safe-area-inset-bottom, 0px)) 24px; /* Safe-area iOS */
             border-top: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
             gap: 10px;
             border-radius: 0 0 20px 20px;
+            box-shadow: 0 -8px 16px rgba(0, 0, 0, 0.12); /* Sombra mais forte */
         }
         
-        @media (min-width: 768px) {
+        /* Tablet */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .modal-actions {
+                padding: 20px 32px 32px 32px;
+                gap: 12px;
+            }
+        }
+        
+        /* Desktop */
+        @media (min-width: 1024px) {
             .modal-actions {
                 padding: 20px 32px 32px 32px;
             }
@@ -998,13 +1025,14 @@
                 <button class="reason-btn" onclick="selectReason(this, 'Aguardando Material')">📦 Aguardando Material</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Recuo de Vagões')">🚂 Recuo de Vagões</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Falha na Locomotiva')">⚙️ Falha na Locomotiva</button>
-                <button class="reason-btn" onclick="selectReason(this, 'Manuten����ão Corretiva')">🔨 Manutenção Corretiva</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Manutenção Corretiva')">🔨 Manutenção Corretiva</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Troca de maquinista VLI')">👨‍✈️ Troca de maquinista VLI</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Troca de Operador Silo (Vale)')">👷 Troca de Operador Silo (Vale)</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Limpeza de Via')">🧹 Limpeza de Via</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Condições Climáticas')">🌧️ Condições Climáticas</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Não informado pela Vale')">❓ Não informado pela Vale</button>
             </div>
+            <!-- Botões fixos no final -->
             <div class="modal-actions">
                 <button class="btn-success" onclick="confirmReason()">✅ Confirmar e Retomar</button>
                 <button class="btn-outline" onclick="cancelReason()">❌ Cancelar</button>
