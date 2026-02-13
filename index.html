@@ -455,8 +455,10 @@
             padding: 24px; 
             max-width: 100%; 
             width: 100%; 
-            max-height: 90vh; 
+            max-height: 85vh; /* Reduzido para deixar mais espaço */
             overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+            overscroll-behavior: contain; /* Evita scroll no fundo */
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
         
@@ -484,7 +486,22 @@
         .reason-buttons { 
             display: grid; 
             gap: 10px; 
-            margin-bottom: 16px; 
+            margin-bottom: 16px;
+        }
+        
+        /* Área de botões fixos no modal */
+        .modal-actions {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 16px 0 0 0;
+            margin: 16px -24px -24px -24px;
+            padding: 16px 24px 24px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
         }
         
         @media (min-width: 768px) {
@@ -943,7 +960,7 @@
                 Deseja realmente FINALIZAR este carregamento?<br><br>
                 Esta ação não pode ser desfeita.
             </div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="modal-actions">
                 <button class="btn-danger" onclick="confirmFinishTimer()">✅ Confirmar Finalização</button>
                 <button class="btn-primary" onclick="cancelFinishTimer()">⬅️ Retornar</button>
             </div>
@@ -969,7 +986,7 @@
                 <button class="reason-btn" onclick="selectReason(this, 'Condições Climáticas')">🌧️ Condições Climáticas</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Não informado pela Vale')">❓ Não informado pela Vale</button>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+            <div class="modal-actions">
                 <button class="btn-success" onclick="confirmReason()">✅ Confirmar e Retomar</button>
                 <button class="btn-outline" onclick="cancelReason()">❌ Cancelar</button>
             </div>
