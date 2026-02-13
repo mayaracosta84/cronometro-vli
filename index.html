@@ -1300,6 +1300,8 @@
         }
         
         function pauseTimer() {
+            // PAUSA O CRONÔMETRO
+            state.isRunning = false;
             state.isPaused = true;
             state.currentStopStart = state.totalTime;
             state.pauseStartTime = Date.now(); // NOVO: registra quando pausou
@@ -1328,6 +1330,8 @@
                 document.body.style.overscrollBehavior = 'contain';
                 document.body.style.touchAction = 'pan-y';
                 
+                // RETOMA O CRONÔMETRO
+                state.isRunning = true;
                 state.isPaused = false;
                 state.currentStopStart = null;
                 state.selectedReason = '';
@@ -1375,6 +1379,9 @@
             };
             
             state.stopEvents.push(stopEvent);
+            
+            // RETOMA O CRONÔMETRO
+            state.isRunning = true;
             state.currentStopStart = null;
             state.isPaused = false;
             state.selectedReason = '';
