@@ -35,13 +35,10 @@
             padding: 12px; 
             color: #333; 
             font-size: 16px;
-            /* Previne pull-to-refresh no mobile */
-            overscroll-behavior-y: contain;
-            touch-action: pan-y;
             /* Força hardware acceleration */
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
-            /* Previne bounce no iOS */
+            /* Scroll suave no iOS */
             -webkit-overflow-scrolling: touch;
         }
         
@@ -458,7 +455,6 @@
             max-height: 90vh; 
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
         
@@ -467,7 +463,6 @@
             padding: 24px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
             flex: 1;
         }
         
@@ -1372,16 +1367,15 @@
             state.currentStopStart = state.totalTime;
             state.pauseStartTime = Date.now(); // NOVO: registra quando pausou
             
-            // LIBERA SCROLL quando modal abre
-            document.body.style.overscrollBehavior = 'auto';
-            document.body.style.touchAction = 'auto';
-            
             elements.statusDot.className = 'status-dot paused';
             elements.statusText.textContent = 'Aguardando Justificativa';
             elements.pauseBtn.disabled = true;
             elements.finishBtn.disabled = true;
             elements.stopReasonModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            
+            console.log('🚨 Modal aberto - body.overflow:', document.body.style.overflow);
+            console.log('🚨 Modal aberto - body.touchAction:', document.body.style.touchAction);
+            console.log('🚨 Modal aberto - body.overscrollBehavior:', document.body.style.overscrollBehavior);
         }
         
         function selectReason(btn, reason) {
@@ -1392,10 +1386,6 @@
         
         function cancelReason() {
             if (confirm('Cancelar parada?')) {
-                // RESTAURA PROTEÇÕES quando modal fecha
-                document.body.style.overscrollBehavior = 'contain';
-                document.body.style.touchAction = 'pan-y';
-                
                 // NOVO: Calcula o tempo que ficou pausado e adiciona ao pausedTime
                 const pauseDuration = Date.now() - state.pauseStartTime;
                 state.pausedTime += pauseDuration;
@@ -1407,7 +1397,6 @@
                 state.selectedReason = '';
                 document.querySelectorAll('.reason-btn').forEach(btn => btn.classList.remove('selected'));
                 elements.stopReasonModal.classList.remove('active');
-                document.body.style.overflow = '';
                 elements.pauseBtn.disabled = false;
                 elements.finishBtn.disabled = false;
                 elements.statusDot.className = 'status-dot running';
@@ -1416,10 +1405,6 @@
         }
         
         function cancelFinishTimer() {
-            // RESTAURA PROTEÇÕES quando modal fecha
-            document.body.style.overscrollBehavior = 'contain';
-            document.body.style.touchAction = 'pan-y';
-            
             // Fecha o modal de confirmação e retorna ao cronômetro
             elements.confirmFinishModal.classList.remove('active');
         }
@@ -1430,10 +1415,6 @@
                 alert('⚠️ Selecione o motivo da parada!');
                 return;
             }
-            
-            // RESTAURA PROTEÇÕES quando modal fecha
-            document.body.style.overscrollBehavior = 'contain';
-            document.body.style.touchAction = 'pan-y';
             
             // CALCULA a duração da parada atual
             const pauseDuration = Date.now() - state.pauseStartTime;
@@ -1470,7 +1451,6 @@
             state.selectedReason = '';
             document.querySelectorAll('.reason-btn').forEach(btn => btn.classList.remove('selected'));
             elements.stopReasonModal.classList.remove('active');
-            document.body.style.overflow = '';
             elements.pauseBtn.disabled = false;
             elements.finishBtn.disabled = false;
             elements.statusDot.className = 'status-dot running';
@@ -1497,19 +1477,11 @@
         }
         
         function finishTimer() {
-            // LIBERA SCROLL quando modal abre
-            document.body.style.overscrollBehavior = 'auto';
-            document.body.style.touchAction = 'auto';
-            
             // Abre o modal de confirmação ao invés do confirm()
             elements.confirmFinishModal.classList.add('active');
         }
         
         function confirmFinishTimer() {
-            // RESTAURA PROTEÇÕES quando modal fecha
-            document.body.style.overscrollBehavior = 'contain';
-            document.body.style.touchAction = 'pan-y';
-            
             // Fecha o modal
             elements.confirmFinishModal.classList.remove('active');
             
@@ -1755,13 +1727,11 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             setTimeout(() => {
                 elements.passwordInput.focus();
             }, 100);
-            document.body.style.overflow = 'hidden';
         }
         
         function cancelPassword() {
             elements.passwordModal.classList.remove('active');
             elements.passwordInput.value = '';
-            document.body.style.overflow = '';
         }
         
         function confirmPassword() {
@@ -1773,7 +1743,6 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
                 renderHistory();
                 elements.passwordModal.classList.remove('active');
                 elements.passwordInput.value = '';
-                document.body.style.overflow = '';
                 alert('✅ Histórico limpo!');
             } else {
                 alert('❌ Senha incorreta!');
