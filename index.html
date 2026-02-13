@@ -1164,7 +1164,7 @@
         function recalculateTimeFromTimestamp() {
             if (state.isRunning && state.startTimestamp) {
                 const now = Date.now();
-                const elapsed = now - state.startTimestamp - state.pausedTime;
+                const elapsed = now - state.startTimestamp;
                 state.totalTime = Math.max(0, elapsed);
                 updateDisplay();
             }
@@ -1378,10 +1378,6 @@
         
         function cancelReason() {
             if (confirm('Cancelar parada?')) {
-                // NOVO: Calcula o tempo que ficou pausado e adiciona ao pausedTime
-                const pauseDuration = Date.now() - state.pauseStartTime;
-                state.pausedTime += pauseDuration;
-                
                 // RETOMA O CRONÔMETRO
                 state.isRunning = true;
                 state.isPaused = false;
@@ -1430,9 +1426,6 @@
             console.log('  - Formatado:', formatTime(stopEvent.duration));
             
             state.stopEvents.push(stopEvent);
-            
-            // ADICIONA o tempo da parada ao pausedTime
-            state.pausedTime += pauseDuration;
             
             console.log('  - state.pausedTime total:', state.pausedTime, 'ms');
             
