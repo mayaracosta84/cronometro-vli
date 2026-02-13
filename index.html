@@ -1303,6 +1303,11 @@
             state.isPaused = true;
             state.currentStopStart = state.totalTime;
             state.pauseStartTime = Date.now(); // NOVO: registra quando pausou
+            
+            // LIBERA SCROLL quando modal abre
+            document.body.style.overscrollBehavior = 'auto';
+            document.body.style.touchAction = 'auto';
+            
             elements.statusDot.className = 'status-dot paused';
             elements.statusText.textContent = 'Aguardando Justificativa';
             elements.pauseBtn.disabled = true;
@@ -1319,6 +1324,10 @@
         
         function cancelReason() {
             if (confirm('Cancelar parada?')) {
+                // RESTAURA PROTEÇÕES quando modal fecha
+                document.body.style.overscrollBehavior = 'contain';
+                document.body.style.touchAction = 'pan-y';
+                
                 state.isPaused = false;
                 state.currentStopStart = null;
                 state.selectedReason = '';
@@ -1333,6 +1342,10 @@
         }
         
         function cancelFinishTimer() {
+            // RESTAURA PROTEÇÕES quando modal fecha
+            document.body.style.overscrollBehavior = 'contain';
+            document.body.style.touchAction = 'pan-y';
+            
             // Fecha o modal de confirmação e retorna ao cronômetro
             elements.confirmFinishModal.classList.remove('active');
         }
@@ -1343,6 +1356,10 @@
                 alert('⚠️ Selecione o motivo da parada!');
                 return;
             }
+            
+            // RESTAURA PROTEÇÕES quando modal fecha
+            document.body.style.overscrollBehavior = 'contain';
+            document.body.style.touchAction = 'pan-y';
             
             // NOVO: Calcula o tempo que ficou pausado
             const pauseDuration = Date.now() - state.pauseStartTime;
@@ -1390,11 +1407,19 @@
         }
         
         function finishTimer() {
+            // LIBERA SCROLL quando modal abre
+            document.body.style.overscrollBehavior = 'auto';
+            document.body.style.touchAction = 'auto';
+            
             // Abre o modal de confirmação ao invés do confirm()
             elements.confirmFinishModal.classList.add('active');
         }
         
         function confirmFinishTimer() {
+            // RESTAURA PROTEÇÕES quando modal fecha
+            document.body.style.overscrollBehavior = 'contain';
+            document.body.style.touchAction = 'pan-y';
+            
             // Fecha o modal
             elements.confirmFinishModal.classList.remove('active');
             
