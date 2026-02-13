@@ -455,7 +455,7 @@
             padding: 24px; 
             max-width: 100%; 
             width: 100%; 
-            max-height: 80vh; 
+            max-height: 90vh; 
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
@@ -476,7 +476,7 @@
             .modal-content { 
                 max-width: 600px;
                 padding: 32px;
-                max-height: 80vh;
+                max-height: 90vh;
             }
             .modal-body {
                 padding: 32px;
@@ -488,7 +488,7 @@
             .modal-content { 
                 max-width: 600px;
                 padding: 32px;
-                max-height: 85vh;
+                max-height: 90vh;
             }
             .modal-body {
                 padding: 32px;
@@ -1218,6 +1218,13 @@
             elements.timerDisplay.textContent = formatTime(state.totalTime);
             const stopTimeMs = state.stopEvents.reduce((sum, event) => sum + event.duration, 0);
             const productiveTimeMs = state.totalTime - stopTimeMs;
+            
+            console.log('📊 updateDisplay chamado:');
+            console.log('  - totalTime:', state.totalTime, 'ms');
+            console.log('  - stopTimeMs:', stopTimeMs, 'ms');
+            console.log('  - productiveTimeMs:', productiveTimeMs, 'ms');
+            console.log('  - stopEvents:', state.stopEvents.length);
+            
             elements.productiveTime.textContent = formatTime(productiveTimeMs);
             elements.stopTime.textContent = formatTime(stopTimeMs);
             elements.stopCount.textContent = state.stopEvents.length;
@@ -1428,24 +1435,33 @@
             document.body.style.overscrollBehavior = 'contain';
             document.body.style.touchAction = 'pan-y';
             
-            // NOVO: Recalcula o tempo atual ANTES de gravar a parada
-            const now = Date.now();
-            const elapsed = now - state.startTimestamp - state.pausedTime;
-            state.totalTime = Math.max(0, elapsed);
+            // CALCULA a duração da parada atual
+            const pauseDuration = Date.now() - state.pauseStartTime;
+            
+            console.log('🔍 DEBUG - Parada confirmada:');
+            console.log('  - Início da parada:', state.currentStopStart, 'ms');
+            console.log('  - Tempo pausado:', pauseDuration, 'ms');
+            console.log('  - pauseStartTime:', state.pauseStartTime);
+            console.log('  - Date.now():', Date.now());
             
             const stopEvent = {
                 id: Date.now() + Math.random(),
                 startTime: state.currentStopStart,
-                endTime: state.totalTime,
-                duration: state.totalTime - state.currentStopStart,
+                endTime: state.currentStopStart + pauseDuration,
+                duration: pauseDuration,
                 reason: reason,
                 timestamp: new Date()
             };
             
+            console.log('  - stopEvent.duration:', stopEvent.duration, 'ms');
+            console.log('  - Formatado:', formatTime(stopEvent.duration));
+            
             state.stopEvents.push(stopEvent);
             
-            // NOVO: Adiciona o tempo da parada ao pausedTime
-            state.pausedTime += stopEvent.duration;
+            // ADICIONA o tempo da parada ao pausedTime
+            state.pausedTime += pauseDuration;
+            
+            console.log('  - state.pausedTime total:', state.pausedTime, 'ms');
             
             // RETOMA O CRONÔMETRO
             state.isRunning = true;
