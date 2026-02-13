@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VLI Timer">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Cronômetro VLI para controle de carregamento ferroviário com registro de paradas">
+    
+    <!-- Ícone de Trem para iOS -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzY0YmEyO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIGZpbGw9InVybCgjZykiIHJ4PSIzNSIvPjx0ZXh0IHg9IjkwIiB5PSIxMjAiIGZvbnQtc2l6ZT0iOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfmoI8L3RleHQ+PC9zdmc+">
+    
+    <!-- Ícones para Android -->
+    <link rel="icon" type="image/svg+xml" sizes="192x192" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzY0YmEyO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIGZpbGw9InVybCgjZykiIHJ4PSI0MCIvPjx0ZXh0IHg9Ijk2IiB5PSIxMzAiIGZvbnQtc2l6ZT0iOTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfmoI8L3RleHQ+PC9zdmc+">
+    <link rel="icon" type="image/svg+xml" sizes="512x512" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNzY0YmEyO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIGZpbGw9InVybCgjZykiIHJ4PSIxMDAiLz48dGV4dCB4PSIyNTYiIHk9IjM1MCIgZm9udC1zaXplPSIyNTYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPvCfmoI8L3RleHQ+PC9zdmc+">
+    
+    <!-- PWA Manifest (inline) -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQ3JvbsO0bWV0cm8gVkxJIC0gQ2FycmVnYW1lbnRvIiwic2hvcnRfbmFtZSI6IlZMSSBUaW1lciIsImRlc2NyaXB0aW9uIjoiQ29udHJvbGUgZGUgY2FycmVnYW1lbnRvIGZlcnJvdmnDoXJpbyBjb20gcmVnaXN0cm8gZGUgcGFyYWRhcyIsInN0YXJ0X3VybCI6Ii4vIiwic2NvcGUiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiM2NjdlZWEiLCJ0aGVtZV9jb2xvciI6IiM2NjdlZWEiLCJvcmllbnRhdGlvbiI6InBvcnRyYWl0IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU1Ua3lJaUJvWldsbmFIUTlJakU1TWlJZ2VHMXNibk05SW1oMGRIQTZMeTkzZDNjdWR6TXViM0puTHpJd01EQXZjM1puSWo0OFpHVm1jejQ4YkdsdVpXRnlSM0poWkdsbGJuUWdhV1E5SW1jaUlIZ3hQU0l3SlNJZ2VURTlJakFsSWlCNE1qMGlNQ1VpSUhreVBTSXhNREFsSWo0OGMzUnZjQ0J2Wm1aelpYUTlJakFsSWlCemRIbHNaVDBpYzNSdmNDMWpiMnh2Y2pvak5qWTNaV1ZoTzNOMGIzQXRiM0JoWTJsMGVUb3hJaTgrUEhOMGIzQWdiMlptYzJWMFBTSXhNREFsSWlCemRIbHNaVDBpYzNSdmNDMWpiMnh2Y2pvak56WTBZbUV5TzNOMGIzQXRiM0JoWTJsMGVUb3hJaTgrUEM5c2FXNWxZWEpIY21Ga2FXVnVkRDQ4TDJSbFpuTStQSEpsWTNRZ2QybGtkR2c5SWpFNU1pSWdhR1ZwWjJoMFBTSXhPVElpSUdacGJHdzlJblZ5YkNnalp5a2lJSEo0UFNJME1DSXZQangwWlhoMElIZzlJamszSWlCNVBTSXhNekFpSUdadmJuUXRjMmw2WlQwaU9UWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpUGp3L2VHMXNJSFpsY25OcGIyNDlJakV1TUNJZ1pXNWpiMlJwYm1jOUluVjBaaTB5SWo4K0tEeHpkbWNnZDJsa2RHZzlJak15SWlCb1pXbG5hSFE5SWpNeUlpQjJhV1YzUW05NFBTSXdJREFnTXpJZ016SWlQangwWlhoMElIZzlJakUySWlCNVBTSXlOQ0lnWm05dWRDMXphWHBsUFNJeU5DSStLend2ZEdWNGRENDhMM04yWno0cFBDOTBaWGgwUGp3dmMzWm5QZz09Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwifSx7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjNhV1IwYUQwaU5URXlJaUJvWldsbmFIUTlJalV4TWlJZ2VHMXNibk05SW1oMGRIQTZMeTkzZDNjdWR6TXViM0puTHpJd01EQXZjM1puSWo0OFpHVm1jejQ4YkdsdVpXRnlSM0poWkdsbGJuUWdhV1E5SW1jaUlIZ3hQU0l3SlNJZ2VURTlJakFsSWlCNE1qMGlNQ1VpSUhreVBTSXhNREFsSWo0OGMzUnZjQ0J2Wm1aelpYUTlJakFsSWlCemRIbHNaVDBpYzNSdmNDMWpiMnh2Y2pvak5qWTNaV1ZoTzNOMGIzQXRiM0JoWTJsMGVUb3hJaTgrUEhOMGIzQWdiMlptYzJWMFBTSXhNREFsSWlCemRIbHNaVDBpYzNSdmNDMWpiMnh2Y2pvak56WTBZbUV5TzNOMGIzQXRiM0JoWTJsMGVUb3hJaTgrUEM5c2FXNWxZWEpIY21Ga2FXVnVkRDQ4TDJSbFpuTStQSEpsWTNRZ2QybGtkR2c5SWpVeE1pSWdhR1ZwWjJoMFBTSTFNVElpSUdacGJHdzlJblZ5YkNnalp5a2lJSEo0UFNJeE1EQWlMejQ4ZEdWNGRDQjRQU0l5TlRZaUlIazlJak0xTUNJZ1ptOXVkQzF6YVhwbFBTSXlOVFlpSUhSbGVIUXRZVzVqYUc5eVBTSnRhV1JrYkdVaVBqdy9lRzFzSUhObGNtbGhiR2w2WlQwaVkzSnZibTl0WlhSeWJ5MTJiR2tpSUhOMFlXNWtZV3h2Ym1VOUltNXZJaUJsYm1OdlpHbHVaejBpZFhSbUxUZ2lQend2ZUcxc0lIWmxjbk5wYjI0OUlqRXVNQ0lnWlc1amIyUnBibWM5SW5WMFppMDRJajgrS0R4emRtY2dkMmxrZEdnOUlqZ3dJaUJvWldsbmFIUTlJamd3SWlCMmFXVjNRbTk0UFNJd0lEQWdPREFnT0RBaVBqeDBaWGgwSUhnOUlqUXdJaUI1UFNJMk1DSWdabTl1ZEMxemFYcGxQU0kyTkNJK0tEd3ZkR1Y0ZEQ0OEwzTjJaejQ3S1R3dmRHVjRkRDQ4TDNOMlp6ND0iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
+    
+    <title>Cronômetro VLI - Carregamento</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            padding: 12px; 
+            color: #333; 
+            font-size: 16px;
+        }
+        
+        .container { 
+            max-width: 100%; 
+            margin: 0 auto; 
+        }
+        
+        /* TABLET */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            .container { max-width: 900px; }
+        }
+        
+        /* DESKTOP */
+        @media (min-width: 1024px) {
+            .container { max-width: 1100px; }
+        }
+        
+        .card { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 20px; 
+            margin-bottom: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+        }
+        
+        @media (min-width: 768px) {
+            .card { 
+                padding: 32px; 
+                margin-bottom: 24px; 
+                border-radius: 20px; 
+            }
+        }
+        
+        .card-title { 
+            font-size: 22px; 
+            font-weight: bold; 
+            color: #2563eb; 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        
+        @media (min-width: 768px) {
+            .card-title { 
+                font-size: 26px; 
+                margin-bottom: 24px; 
+            }
+        }
+        
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 16px; 
+            background: #f9fafb; 
+            padding: 16px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+        }
+        
+        @media (min-width: 768px) {
+            .form-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 20px; 
+                padding: 24px; 
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .form-grid { 
+                grid-template-columns: repeat(4, 1fr); 
+            }
+        }
+        
+        .form-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+        }
+        
+        label { 
+            font-size: 15px; 
+            font-weight: 600; 
+            color: #374151; 
+        }
+        
+        input { 
+            padding: 16px; 
+            border: 2px solid #d1d5db; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            transition: border-color 0.2s;
+        }
+        
+        input:focus { 
+            outline: none; 
+            border-color: #2563eb; 
+        }
+        
+        input:disabled { 
+            background: #f3f4f6; 
+            cursor: not-allowed; 
+            opacity: 0.6;
+        }
+        
+        select {
+            padding: 16px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        select:disabled {
+            background: #f3f4f6;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .timer-display { 
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); 
+            border-radius: 16px; 
+            padding: 24px 16px; 
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+        
+        @media (min-width: 768px) {
+            .timer-display { 
+                padding: 40px 24px; 
+                border-radius: 20px; 
+            }
+        }
+        
+        .timer-main { 
+            font-size: 48px; 
+            font-family: 'Courier New', monospace; 
+            font-weight: bold; 
+            color: #1e3a8a; 
+            margin-bottom: 20px; 
+            line-height: 1;
+        }
+        
+        @media (min-width: 768px) {
+            .timer-main { 
+                font-size: 64px; 
+                margin-bottom: 32px; 
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .timer-main { 
+                font-size: 80px; 
+            }
+        }
+        
+        .timer-stats { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 12px; 
+        }
+        
+        @media (min-width: 768px) {
+            .timer-stats { 
+                grid-template-columns: repeat(3, 1fr); 
+                gap: 16px; 
+            }
+        }
+        
+        .stat-box { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 16px; 
+        }
+        
+        @media (min-width: 768px) {
+            .stat-box { 
+                padding: 20px; 
+            }
+        }
+        
+        .stat-label { 
+            font-size: 13px; 
+            color: #6b7280; 
+            margin-bottom: 6px; 
+            font-weight: 500;
+        }
+        
+        .stat-value { 
+            font-family: 'Courier New', monospace; 
+            font-weight: bold; 
+            font-size: 22px;
+        }
+        
+        @media (min-width: 768px) {
+            .stat-value { 
+                font-size: 28px; 
+            }
+        }
+        
+        .stat-value.productive { color: #059669; }
+        .stat-value.stopped { color: #dc2626; }
+        .stat-value.count { color: #ea580c; }
+        
+        .button-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            margin-bottom: 16px; 
+        }
+        
+        @media (min-width: 768px) {
+            .button-group { 
+                flex-direction: row; 
+                gap: 16px; 
+            }
+        }
+        
+        button { 
+            padding: 18px 24px; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 17px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            justify-content: center; 
+            min-height: 58px;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        
+        button:active { 
+            transform: scale(0.96); 
+            opacity: 0.85;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        @media (min-width: 768px) {
+            button { 
+                flex: 1;
+                padding: 20px 24px;
+            }
+        }
+        
+        .btn-primary { 
+            background: #2563eb; 
+            color: white; 
+        }
+        
+        .btn-secondary { 
+            background: #6b7280; 
+            color: white; 
+        }
+        
+        .btn-danger { 
+            background: #ef4444; 
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3), 0 2px 4px -1px rgba(239, 68, 68, 0.2);
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.4), 0 4px 6px -2px rgba(239, 68, 68, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .btn-success { 
+            background: #25D366; 
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(37, 211, 102, 0.3), 0 2px 4px -1px rgba(37, 211, 102, 0.2);
+        }
+        
+        .btn-success:hover {
+            background: #1fb854;
+            box-shadow: 0 10px 15px -3px rgba(37, 211, 102, 0.4), 0 4px 6px -2px rgba(37, 211, 102, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .btn-info {
+            background: #0ea5e9;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #25D366;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .btn-success:hover {
+            background: #1fb854;
+        }
+        
+        .btn-outline { 
+            background: white; 
+            color: #374151; 
+            border: 2px solid #d1d5db; 
+        }
+        
+        .status-indicator { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            padding: 12px; 
+            background: white; 
+            border-radius: 12px; 
+            margin-bottom: 16px;
+        }
+        
+        .status-dot { 
+            width: 14px; 
+            height: 14px; 
+            border-radius: 50%; 
+        }
+        
+        .status-dot.running { 
+            background: #10b981; 
+        }
+        
+        .status-dot.paused { 
+            background: #ef4444; 
+            animation: pulse 1.5s infinite; 
+        }
+        
+        @keyframes pulse { 
+            0%, 100% { opacity: 1; } 
+            50% { opacity: 0.5; } 
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 16px; 
+            font-size: 14px; 
+        }
+        
+        th, td { 
+            padding: 12px 8px; 
+            text-align: left; 
+            border-bottom: 1px solid #e5e7eb; 
+        }
+        
+        th { 
+            background: #f9fafb; 
+            font-weight: 600; 
+            font-size: 13px; 
+            color: #374151; 
+            position: sticky; 
+            top: 0;
+        }
+        
+        td { 
+            font-size: 14px; 
+        }
+        
+        .mono { 
+            font-family: 'Courier New', monospace; 
+        }
+        
+        .table-wrapper { 
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch; 
+        }
+        
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0,0,0,0.8); 
+            z-index: 9999; 
+            padding: 16px; 
+            overflow-y: auto;
+        }
+        
+        .modal.active { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .modal-content { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 24px; 
+            max-width: 100%; 
+            width: 100%; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        
+        @media (min-width: 768px) {
+            .modal-content { 
+                max-width: 600px; 
+                padding: 32px; 
+            }
+        }
+        
+        .modal-title { 
+            font-size: 20px; 
+            font-weight: bold; 
+            color: #1f2937; 
+            margin-bottom: 16px;
+        }
+        
+        @media (min-width: 768px) {
+            .modal-title { 
+                font-size: 24px; 
+                margin-bottom: 20px; 
+            }
+        }
+        
+        .reason-buttons { 
+            display: grid; 
+            gap: 10px; 
+            margin-bottom: 16px; 
+        }
+        
+        @media (min-width: 768px) {
+            .reason-buttons { 
+                gap: 12px; 
+            }
+        }
+        
+        .reason-btn { 
+            padding: 18px; 
+            text-align: left; 
+            background: #f9fafb; 
+            border: 3px solid #e5e7eb; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            font-size: 16px; 
+            width: 100%; 
+            font-weight: 500;
+        }
+        
+        .reason-btn:active { 
+            transform: scale(0.98); 
+        }
+        
+        .reason-btn.selected { 
+            background: #dbeafe; 
+            border-color: #2563eb; 
+            color: #1e40af; 
+            font-weight: 600; 
+        }
+        
+        .custom-reason { 
+            width: 100%; 
+            padding: 16px; 
+            border: 2px solid #d1d5db; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            margin-top: 8px; 
+            resize: vertical; 
+            min-height: 100px;
+            font-family: inherit;
+        }
+        
+        .alert { 
+            padding: 16px; 
+            border-radius: 12px; 
+            margin-bottom: 16px; 
+            font-size: 15px; 
+            line-height: 1.5;
+        }
+        
+        .alert-info { 
+            background: #dbeafe; 
+            color: #1e40af; 
+            border-left: 4px solid #2563eb; 
+        }
+        
+        .alert-danger { 
+            background: #fee2e2; 
+            color: #991b1b; 
+            border-left: 4px solid #dc2626; 
+        }
+        
+        .alert-warning { 
+            background: #fef3c7; 
+            color: #92400e; 
+            border-left: 4px solid #f59e0b; 
+        }
+        
+        .alert-success { 
+            background: #d1fae5; 
+            color: #065f46; 
+            border-left: 4px solid #10b981; 
+        }
+        
+        .alert-success { 
+            background: #d1fae5; 
+            color: #065f46; 
+            border-left: 4px solid #059669; 
+        }
+        
+        .history-item { 
+            border: 2px solid #e5e7eb; 
+            border-radius: 16px; 
+            margin-bottom: 16px; 
+            overflow: hidden; 
+        }
+        
+        @media (min-width: 768px) {
+            .history-item { 
+                margin-bottom: 20px; 
+            }
+        }
+        
+        .history-header { 
+            background: #f9fafb; 
+            padding: 20px; 
+        }
+        
+        @media (min-width: 768px) {
+            .history-header { 
+                padding: 24px; 
+            }
+        }
+        
+        .history-info { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 16px; 
+            margin-top: 16px; 
+            font-size: 14px; 
+        }
+        
+        @media (min-width: 768px) {
+            .history-info { 
+                grid-template-columns: repeat(4, 1fr); 
+                gap: 20px; 
+            }
+        }
+        
+        .history-info-item { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+        }
+        
+        .history-info-label { 
+            color: #6b7280; 
+            font-size: 12px; 
+            font-weight: 500;
+        }
+        
+        .history-info-value { 
+            font-weight: 600; 
+            color: #1f2937; 
+            font-size: 15px; 
+        }
+        
+        .history-stats { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 12px; 
+            margin-top: 16px; 
+        }
+        
+        @media (min-width: 768px) {
+            .history-stats { 
+                grid-template-columns: repeat(3, 1fr); 
+                gap: 16px; 
+            }
+        }
+        
+        .history-stat { 
+            background: white; 
+            padding: 16px; 
+            border-radius: 12px; 
+            text-align: center; 
+        }
+        
+        .history-stat-label { 
+            font-size: 12px; 
+            color: #6b7280; 
+            margin-bottom: 6px; 
+            font-weight: 500;
+        }
+        
+        .history-stat-value { 
+            font-family: 'Courier New', monospace; 
+            font-weight: bold; 
+            font-size: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .history-stat-value { 
+                font-size: 24px; 
+            }
+        }
+        
+        .history-actions { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            margin-top: 16px; 
+        }
+        
+        @media (min-width: 768px) {
+            .history-actions { 
+                flex-direction: row; 
+            }
+        }
+        
+        .history-actions button { 
+            padding: 16px; 
+            font-size: 16px; 
+            width: 100%; 
+        }
+        
+        .history-details { 
+            padding: 20px; 
+            display: none; 
+            background: white; 
+        }
+        
+        .history-details.active { 
+            display: block; 
+        }
+        
+        @media (min-width: 768px) {
+            .history-details { 
+                padding: 24px; 
+            }
+        }
+        
+        .empty-state { 
+            text-align: center; 
+            padding: 48px 24px; 
+            color: #6b7280;
+        }
+        
+        .empty-state-icon { 
+            font-size: 56px; 
+            margin-bottom: 12px; 
+            opacity: 0.3; 
+        }
+        
+        .hidden { 
+            display: none !important; 
+        }
+        
+        .offline-badge { 
+            position: fixed; 
+            bottom: 16px; 
+            right: 16px; 
+            background: #059669; 
+            color: white; 
+            padding: 10px 16px; 
+            border-radius: 24px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+            z-index: 999;
+        }
+        
+        .success-message { 
+            background: #d1fae5; 
+            color: #065f46; 
+            padding: 16px; 
+            border-radius: 12px; 
+            margin-bottom: 16px; 
+            border-left: 4px solid #059669; 
+            display: none; 
+            font-size: 15px; 
+            line-height: 1.5;
+        }
+        
+        .success-message.show { 
+            display: block; 
+            animation: slideIn 0.3s ease-out; 
+        }
+        
+        @keyframes slideIn { 
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            } 
+        }
+        
+        .header-actions { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            margin-top: 12px; 
+        }
+        
+        @media (min-width: 768px) {
+            .header-actions { 
+                flex-direction: row; 
+                gap: 12px; 
+            }
+        }
+        
+        .new-badge { 
+            background: #10b981; 
+            color: white; 
+            padding: 6px 12px; 
+            border-radius: 16px; 
+            font-size: 11px; 
+            font-weight: bold; 
+            margin-left: 8px; 
+            animation: pulse 2s infinite;
+        }
+        
+        .password-input { 
+            width: 100%; 
+            padding: 18px; 
+            border: 3px solid #d1d5db; 
+            border-radius: 12px; 
+            font-size: 18px; 
+            text-align: center; 
+            letter-spacing: 6px; 
+            font-weight: bold; 
+            margin-bottom: 16px;
+            font-family: inherit;
+        }
+        
+        .password-input:focus { 
+            outline: none; 
+            border-color: #dc2626; 
+        }
+        
+        .history-title-row { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+        }
+        
+        .history-title-info { 
+            flex: 1; 
+        }
+        
+        .os-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            margin-bottom: 4px;
+        }
+        
+        @media (min-width: 768px) {
+            .os-title { 
+                font-size: 20px; 
+            }
+        }
+        
+        .user-name { 
+            font-size: 14px; 
+            color: #6b7280;
+        }
+        
+        .card-header { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            margin-bottom: 20px; 
+        }
+        
+        @media (min-width: 768px) {
+            .card-header { 
+                margin-bottom: 24px; 
+            }
+        }
+        
+        .card-header-title { 
+            font-size: 22px; 
+            font-weight: bold; 
+            color: #2563eb; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        
+        @media (min-width: 768px) {
+            .card-header-title { 
+                font-size: 26px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-badge">✅ OFFLINE</div>
+    <div class="container">
+        <div class="card">
+            <div class="card-title">⏱️ Cronômetro VLI</div>
+            <div class="success-message" id="successMessage">
+                <strong>✅ Finalizado!</strong><br>
+                Registro salvo no histórico. Role para baixo para ver.
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="userName">Nome do Maquinista</label>
+                    <input type="text" id="userName" placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="vagaoType">Carregamento</label>
+                    <select id="vagaoType">
+                        <option value="">Selecione o tipo</option>
+                        <option value="GDE Carvão">GDE Carvão</option>
+                        <option value="GDE Coque">GDE Coque</option>
+                        <option value="Gondola">Gondola</option>
+                    </select>
+                </div>
+            </div>
+            <div class="timer-display">
+                <div class="timer-main" id="timerDisplay">00:00:00</div>
+                <div class="timer-stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Tempo Produtivo</div>
+                        <div class="stat-value productive" id="productiveTime">00:00:00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Tempo de Paradas</div>
+                        <div class="stat-value stopped" id="stopTime">00:00:00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Número de Paradas</div>
+                        <div class="stat-value count" id="stopCount">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="button-group">
+                <button class="btn-primary" id="startBtn">▶️ Iniciar Carregamento</button>
+                <button class="btn-secondary hidden" id="pauseBtn">⏸️ Registrar Parada</button>
+                <button class="btn-danger hidden" id="finishBtn">⏹️ Finalizar Carregamento</button>
+            </div>
+            <div class="status-indicator hidden" id="statusIndicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText"></span>
+            </div>
+            <div id="currentStopsContainer" class="hidden">
+                <div class="alert alert-danger">
+                    <strong>⚠️ Paradas:</strong> <span id="currentStopsTime">00:00:00</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>#</th><th>Início</th><th>Fim</th><th>Duração</th><th>Motivo</th></tr>
+                        </thead>
+                        <tbody id="currentStopsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card" id="historyCard">
+            <div class="card-header">
+                <div class="card-header-title">
+                    📋 Histórico (<span id="historyCount">0</span>)<span class="new-badge hidden" id="newBadge">NOVO</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-info" onclick="downloadExcelAll()">📥 Baixar Excel Completo</button>
+                    <button class="btn-danger" onclick="clearHistoryPrompt()">🔒 Limpar Histórico (Senha)</button>
+                </div>
+            </div>
+            <div id="historyContainer"></div>
+        </div>
+    </div>
+    
+    <!-- Modal de Confirmação de Finalização -->
+    <div class="modal" id="confirmFinishModal">
+        <div class="modal-content">
+            <div class="modal-title">⚠️ Confirmar Finalização</div>
+            <div class="alert alert-danger">
+                <strong>⚠️ Atenção!</strong><br>
+                Deseja realmente FINALIZAR este carregamento?<br><br>
+                Esta ação não pode ser desfeita.
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn-danger" onclick="confirmFinishTimer()">✅ Confirmar Finalização</button>
+                <button class="btn-primary" onclick="cancelFinishTimer()">⬅️ Retornar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Justificativa -->
+    <div class="modal" id="stopReasonModal">
+        <div class="modal-content">
+            <div class="modal-title">⚠️ Justificativa da Parada</div>
+            <div class="alert alert-warning">
+                <strong>⏸️ Cronômetro pausado!</strong><br>
+                Selecione o motivo da parada:
+            </div>
+            <div class="reason-buttons" id="reasonButtons">
+                <button class="reason-btn" onclick="selectReason(this, 'Aguardando Material')">📦 Aguardando Material</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Recuo de Vagões')">🚂 Recuo de Vagões</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Falha na Locomotiva')">⚙️ Falha na Locomotiva</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Manuten  ão Corretiva')">🔨 Manutenção Corretiva</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Troca de maquinista VLI')">👨‍✈️ Troca de maquinista VLI</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Troca de Operador Silo (Vale)')">👷 Troca de Operador Silo (Vale)</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Limpeza de Via')">🧹 Limpeza de Via</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Condições Climáticas')">🌧️ Condições Climáticas</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Não informado pela Vale')">❓ Não informado pela Vale</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+                <button class="btn-success" onclick="confirmReason()">✅ Confirmar e Retomar</button>
+                <button class="btn-outline" onclick="cancelReason()">❌ Cancelar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Senha -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-title">🔒 Senha Necessária</div>
+            <div class="alert alert-danger">
+                <strong>⚠️ Atenção!</strong><br>
+                Deletar PERMANENTEMENTE todo o histórico.<br><br>
+                Digite a senha mestre:
+            </div>
+            <input type="password" class="password-input" id="passwordInput" placeholder="SENHA" autocomplete="off">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn-danger" onclick="confirmPassword()">✅ Confirmar</button>
+                <button class="btn-outline" onclick="cancelPassword()">❌ Cancelar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Envio WhatsApp -->
+    <div class="modal" id="whatsappModal">
+        <div class="modal-content">
+            <div class="modal-title">📱 Enviar Relatório</div>
+            <div class="alert alert-success">
+                <strong>✅ Carregamento finalizado!</strong><br>
+                O relatório será enviado para:<br>
+                📞 <strong>(31) 99510-7635</strong>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+                <button class="btn-success" id="whatsappSendAll" style="background: #25D366; font-size: 18px; padding: 18px;">
+                    📱 Enviar Relatório
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const MASTER_PASSWORD = 'TMCVLI';
+        const WHATSAPP_NUMBERS = [
+            { name: 'Principal', number: '5531995107635' }
+        ];
+        
+        let state = { 
+            totalTime: 0, 
+            isRunning: false, 
+            isPaused: false, 
+            hasStarted: false, 
+            currentStopStart: null, 
+            stopEvents: [], 
+            intervalId: null, 
+            selectedReason: '', 
+            history: [],
+            startDateTime: '' // Armazena internamente a data/hora de início
+        };
+        
+        const elements = {
+            userName: document.getElementById('userName'),
+            vagaoType: document.getElementById('vagaoType'),
+            timerDisplay: document.getElementById('timerDisplay'),
+            productiveTime: document.getElementById('productiveTime'),
+            stopTime: document.getElementById('stopTime'),
+            stopCount: document.getElementById('stopCount'),
+            startBtn: document.getElementById('startBtn'),
+            pauseBtn: document.getElementById('pauseBtn'),
+            finishBtn: document.getElementById('finishBtn'),
+            statusIndicator: document.getElementById('statusIndicator'),
+            statusDot: document.getElementById('statusDot'),
+            statusText: document.getElementById('statusText'),
+            currentStopsContainer: document.getElementById('currentStopsContainer'),
+            currentStopsTime: document.getElementById('currentStopsTime'),
+            currentStopsBody: document.getElementById('currentStopsBody'),
+            stopReasonModal: document.getElementById('stopReasonModal'),
+            confirmFinishModal: document.getElementById('confirmFinishModal'),
+            historyContainer: document.getElementById('historyContainer'),
+            historyCount: document.getElementById('historyCount'),
+            successMessage: document.getElementById('successMessage'),
+            historyCard: document.getElementById('historyCard'),
+            newBadge: document.getElementById('newBadge'),
+            passwordModal: document.getElementById('passwordModal'),
+            passwordInput: document.getElementById('passwordInput'),
+            whatsappModal: document.getElementById('whatsappModal'),
+            whatsappSendAll: document.getElementById('whatsappSendAll')
+        };
+        
+        function formatTime(ms) {
+            const hours = Math.floor(ms / 3600000);
+            const minutes = Math.floor((ms % 3600000) / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        function formatDateTime(date) {
+            return new Date(date).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+        
+        function formatDateTimeForExcel(dateStr) {
+            if (!dateStr || dateStr === 'Não informado') return dateStr;
+            const [datePart, timePart] = dateStr.split('T');
+            const [year, month, day] = datePart.split('-');
+            return `${day}/${month}/${year} ${timePart || ''}`;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function updateDisplay() {
+            elements.timerDisplay.textContent = formatTime(state.totalTime);
+            const stopTimeMs = state.stopEvents.reduce((sum, event) => sum + event.duration, 0);
+            const productiveTimeMs = state.totalTime - stopTimeMs;
+            elements.productiveTime.textContent = formatTime(productiveTimeMs);
+            elements.stopTime.textContent = formatTime(stopTimeMs);
+            elements.stopCount.textContent = state.stopEvents.length;
+            elements.currentStopsTime.textContent = formatTime(stopTimeMs);
+        }
+        
+        function showSuccessMessage() {
+            elements.successMessage.classList.add('show');
+            elements.newBadge.classList.remove('hidden');
+            setTimeout(() => {
+                elements.successMessage.classList.remove('show');
+            }, 5000);
+            setTimeout(() => {
+                elements.newBadge.classList.add('hidden');
+            }, 7000);
+        }
+        
+        function exportToExcelOffline(data, fileName) {
+            let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table{border-collapse:collapse;}th,td{border:1px solid #000;padding:8px;}th{background-color:#4472C4;color:white;font-weight:bold;}.time-cell{font-family:Courier New;}</style></head><body><table>${data}</table></body></html>`;
+            const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+        
+        function downloadExcelAll() {
+            if (state.history.length === 0) {
+                alert('⚠️ Nenhum registro!');
+                return;
+            }
+            
+            let tableHTML = '';
+            tableHTML += '<tr><th>Usuário</th><th>Tipo Vagão</th><th>Data/Hora Início</th><th>Data/Hora Fim</th><th>Tempo Total</th><th>Tempo Produtivo</th><th>Tempo Paradas</th><th>Eficiência (%)</th><th>Nº Paradas</th><th>Parada #</th><th>Início Parada</th><th>Fim Parada</th><th>Duração Parada</th><th>Motivo Parada</th></tr>';
+            
+            state.history.forEach((record) => {
+                const stopTimeMs = record.totalTime - record.productiveTime;
+                const efficiency = record.totalTime > 0 ? ((record.productiveTime / record.totalTime) * 100).toFixed(1) : 0;
+                
+                if (record.stopEvents.length === 0) {
+                    tableHTML += `<tr>
+                        <td>${escapeHtml(record.userName)}</td>
+                        <td>${escapeHtml(record.vagaoType || 'Não informado')}</td>
+                        <td>${formatDateTimeForExcel(record.startDateTime)}</td>
+                        <td>${formatDateTimeForExcel(record.endDateTime)}</td>
+                        <td class="time-cell">${formatTime(record.totalTime)}</td>
+                        <td class="time-cell">${formatTime(record.productiveTime)}</td>
+                        <td class="time-cell">${formatTime(stopTimeMs)}</td>
+                        <td>${efficiency}</td>
+                        <td>0</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>`;
+                } else {
+                    record.stopEvents.forEach((event, index) => {
+                        tableHTML += `<tr>
+                            <td>${escapeHtml(record.userName)}</td>
+                            <td>${escapeHtml(record.vagaoType || 'Não informado')}</td>
+                            <td>${formatDateTimeForExcel(record.startDateTime)}</td>
+                            <td>${formatDateTimeForExcel(record.endDateTime)}</td>
+                            <td class="time-cell">${formatTime(record.totalTime)}</td>
+                            <td class="time-cell">${formatTime(record.productiveTime)}</td>
+                            <td class="time-cell">${formatTime(stopTimeMs)}</td>
+                            <td>${efficiency}</td>
+                            <td>${record.stopEvents.length}</td>
+                            <td>${index + 1}</td>
+                            <td class="time-cell">${formatTime(event.startTime)}</td>
+                            <td class="time-cell">${formatTime(event.endTime)}</td>
+                            <td class="time-cell">${formatTime(event.duration)}</td>
+                            <td>${escapeHtml(event.reason)}</td>
+                        </tr>`;
+                    });
+                }
+            });
+            
+            const fileName = `VLI_Completo_${new Date().toISOString().slice(0, 10)}.xls`;
+            exportToExcelOffline(tableHTML, fileName);
+            alert(`✅ Excel baixado!\n\nArquivo: ${fileName}\nPasta: DOWNLOADS`);
+        }
+        
+        function startTimer() {
+            // Validação dos campos obrigatórios
+            const userName = elements.userName.value.trim();
+            const vagaoType = elements.vagaoType.value.trim();
+            
+            if (!userName) {
+                alert('⚠️ Campo obrigatório!\n\nPor favor, preencha o NOME DO MAQUINISTA antes de iniciar.');
+                elements.userName.focus();
+                return;
+            }
+            
+            if (!vagaoType) {
+                alert('⚠️ Campo obrigatório!\n\nPor favor, preencha o CARREGAMENTO antes de iniciar.');
+                elements.vagaoType.focus();
+                return;
+            }
+            
+            state.isRunning = true;
+            state.hasStarted = true;
+            // Preenche automaticamente a data e hora de início
+            const now = new Date();
+            const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            state.startDateTime = localDateTime;
+            
+            elements.userName.disabled = true;
+            elements.vagaoType.disabled = true;
+            elements.startBtn.classList.add('hidden');
+            elements.pauseBtn.classList.remove('hidden');
+            elements.finishBtn.classList.remove('hidden');
+            elements.statusIndicator.classList.remove('hidden');
+            elements.statusDot.className = 'status-dot running';
+            elements.statusText.textContent = 'Cronômetro Rodando';
+            
+            state.intervalId = setInterval(() => {
+                state.totalTime += 10;
+                updateDisplay();
+            }, 10);
+        }
+        
+        function pauseTimer() {
+            state.isPaused = true;
+            state.currentStopStart = state.totalTime;
+            elements.statusDot.className = 'status-dot paused';
+            elements.statusText.textContent = 'Aguardando Justificativa';
+            elements.pauseBtn.disabled = true;
+            elements.finishBtn.disabled = true;
+            elements.stopReasonModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function selectReason(btn, reason) {
+            document.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            state.selectedReason = reason;
+        }
+        
+        function cancelReason() {
+            if (confirm('Cancelar parada?')) {
+                state.isPaused = false;
+                state.currentStopStart = null;
+                state.selectedReason = '';
+                document.querySelectorAll('.reason-btn').forEach(btn => btn.classList.remove('selected'));
+                elements.stopReasonModal.classList.remove('active');
+                document.body.style.overflow = '';
+                elements.pauseBtn.disabled = false;
+                elements.finishBtn.disabled = false;
+                elements.statusDot.className = 'status-dot running';
+                elements.statusText.textContent = 'Cronômetro Rodando';
+            }
+        }
+        
+        function cancelFinishTimer() {
+            // Fecha o modal de confirmação e retorna ao cronômetro
+            elements.confirmFinishModal.classList.remove('active');
+        }
+        
+        function confirmReason() {
+            let reason = state.selectedReason;
+            if (!reason) {
+                alert('⚠️ Selecione o motivo da parada!');
+                return;
+            }
+            
+            const stopEvent = {
+                id: Date.now() + Math.random(),
+                startTime: state.currentStopStart,
+                endTime: state.totalTime,
+                duration: state.totalTime - state.currentStopStart,
+                reason: reason,
+                timestamp: new Date()
+            };
+            
+            state.stopEvents.push(stopEvent);
+            state.currentStopStart = null;
+            state.isPaused = false;
+            state.selectedReason = '';
+            document.querySelectorAll('.reason-btn').forEach(btn => btn.classList.remove('selected'));
+            elements.stopReasonModal.classList.remove('active');
+            document.body.style.overflow = '';
+            elements.pauseBtn.disabled = false;
+            elements.finishBtn.disabled = false;
+            elements.statusDot.className = 'status-dot running';
+            elements.statusText.textContent = 'Cronômetro Rodando';
+            updateCurrentStops();
+        }
+        
+        function updateCurrentStops() {
+            if (state.stopEvents.length === 0) {
+                elements.currentStopsContainer.classList.add('hidden');
+                return;
+            }
+            elements.currentStopsContainer.classList.remove('hidden');
+            elements.currentStopsBody.innerHTML = state.stopEvents.map((event, index) => `
+                <tr>
+                    <td><strong>${index + 1}</strong></td>
+                    <td class="mono">${formatTime(event.startTime)}</td>
+                    <td class="mono">${formatTime(event.endTime)}</td>
+                    <td class="mono" style="color: #dc2626; font-weight: bold;">${formatTime(event.duration)}</td>
+                    <td>${escapeHtml(event.reason)}</td>
+                </tr>
+            `).join('');
+            updateDisplay();
+        }
+        
+        function finishTimer() {
+            // Abre o modal de confirmação ao invés do confirm()
+            elements.confirmFinishModal.classList.add('active');
+        }
+        
+        function confirmFinishTimer() {
+            // Fecha o modal
+            elements.confirmFinishModal.classList.remove('active');
+            
+            clearInterval(state.intervalId);
+            const now = new Date();
+            const endDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            const stopTimeMs = state.stopEvents.reduce((sum, event) => sum + event.duration, 0);
+            const productiveTimeMs = state.totalTime - stopTimeMs;
+            
+            const record = {
+                id: Date.now(),
+                userName: elements.userName.value || 'Não informado',
+                vagaoType: elements.vagaoType.value || 'Não informado',
+                startDateTime: state.startDateTime || 'Não informado',
+                endDateTime: endDateTime,
+                totalTime: state.totalTime,
+                productiveTime: productiveTimeMs,
+                stopEvents: [...state.stopEvents],
+                completedAt: new Date()
+            };
+            
+            state.history.unshift(record);
+            saveHistory();
+            renderHistory();
+            
+            state.totalTime = 0;
+            state.isRunning = false;
+            state.isPaused = false;
+            state.hasStarted = false;
+            state.currentStopStart = null;
+            state.stopEvents = [];
+            state.startDateTime = '';
+            elements.userName.value = '';
+            elements.vagaoType.value = '';
+            elements.userName.disabled = false;
+            elements.vagaoType.disabled = false;
+            elements.startBtn.classList.remove('hidden');
+            elements.pauseBtn.classList.add('hidden');
+            elements.finishBtn.classList.add('hidden');
+            elements.statusIndicator.classList.add('hidden');
+            elements.currentStopsContainer.classList.add('hidden');
+            updateDisplay();
+            
+            showSuccessMessage();
+            
+            setTimeout(() => {
+                elements.historyCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+        
+        function saveHistory() {
+            try {
+                localStorage.setItem('vli-cronometro-history', JSON.stringify(state.history));
+            } catch (e) {
+                console.error('Erro ao salvar histórico:', e);
+            }
+        }
+        
+        function loadHistory() {
+            try {
+                const saved = localStorage.getItem('vli-cronometro-history');
+                if (saved) {
+                    state.history = JSON.parse(saved);
+                    renderHistory();
+                }
+            } catch (e) {
+                console.error('Erro ao carregar histórico:', e);
+                state.history = [];
+            }
+        }
+        
+        function calculateStopPercentages(stopEvents, totalStopTime) {
+            const reasonMap = {};
+            stopEvents.forEach(event => {
+                if (!reasonMap[event.reason]) {
+                    reasonMap[event.reason] = 0;
+                }
+                reasonMap[event.reason] += event.duration;
+            });
+            
+            const times = [];
+            for (const [reason, duration] of Object.entries(reasonMap)) {
+                times.push(`${reason}: ${formatTime(duration)}`);
+            }
+            
+            return times.join('\n');
+        }
+        
+        function sendWhatsApp(record) {
+            const stopTimeMs = record.totalTime - record.productiveTime;
+            const stopPercentages = calculateStopPercentages(record.stopEvents, stopTimeMs);
+            
+            const startFormatted = record.startDateTime.split('T').join(' às ');
+            const endFormatted = record.endDateTime.split('T').join(' às ');
+            
+            const message = `📊 *RELATÓRIO VLI*
+
+👤 *Maquinista:* ${record.userName}
+🚂 *Carregamento:* ${record.vagaoType}
+
+⏰ *Início:* ${startFormatted}
+⏰ *Final:* ${endFormatted}
+
+⏱️ *Horas de Carregamento:* ${formatTime(record.productiveTime)}
+⏸️ *Horas de Parada:* ${formatTime(stopTimeMs)}
+
+📊 *Motivos das Paradas:*
+${stopPercentages || 'Nenhuma parada'}
+
+_Relatório gerado automaticamente pelo SYSTEMAY_`;
+
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Configurar botão para enviar
+            elements.whatsappSendAll.onclick = () => {
+                const contact = WHATSAPP_NUMBERS[0];
+                const whatsappURL = `https://api.whatsapp.com/send?phone=${contact.number}&text=${encodedMessage}`;
+                window.open(whatsappURL, '_blank');
+                
+                // Fechar modal automaticamente após abrir WhatsApp
+                setTimeout(() => {
+                    closeWhatsAppModal();
+                }, 500);
+            };
+            
+            // Exibir modal
+            elements.whatsappModal.classList.add('active');
+        }
+        
+        function closeWhatsAppModal() {
+            elements.whatsappModal.classList.remove('active');
+        }
+        
+        function renderHistory() {
+            elements.historyCount.textContent = state.history.length;
+            
+            if (state.history.length === 0) {
+                elements.historyContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>Nenhum carregamento.</p></div>';
+                return;
+            }
+            
+            elements.historyContainer.innerHTML = state.history.map((record) => {
+                const stopTimeMs = record.totalTime - record.productiveTime;
+                return `
+                    <div class="history-item">
+                        <div class="history-header">
+                            <div class="history-title-row">
+                                <div class="history-title-info">
+                                    <div class="os-title">Carregamento: ${escapeHtml(record.vagaoType || 'Não informado')}</div>
+                                    <div class="user-name">Maquinista: ${escapeHtml(record.userName)}</div>
+                                </div>
+                            </div>
+                            <div class="history-info">
+                                <div class="history-info-item">
+                                    <div class="history-info-label">Início</div>
+                                    <div class="history-info-value">${escapeHtml(record.startDateTime)}</div>
+                                </div>
+                                <div class="history-info-item">
+                                    <div class="history-info-label">Fim</div>
+                                    <div class="history-info-value">${escapeHtml(record.endDateTime)}</div>
+                                </div>
+                                <div class="history-info-item">
+                                    <div class="history-info-label">Finalizado</div>
+                                    <div class="history-info-value">${formatDateTime(record.completedAt)}</div>
+                                </div>
+                                <div class="history-info-item">
+                                    <div class="history-info-label">Paradas</div>
+                                    <div class="history-info-value" style="color: #dc2626;">${record.stopEvents.length}</div>
+                                </div>
+                            </div>
+                            <div class="history-stats">
+                                <div class="history-stat" style="background: #dbeafe;">
+                                    <div class="history-stat-label">Total</div>
+                                    <div class="history-stat-value" style="color: #1e3a8a;">${formatTime(record.totalTime)}</div>
+                                </div>
+                                <div class="history-stat" style="background: #d1fae5;">
+                                    <div class="history-stat-label">Carregamento</div>
+                                    <div class="history-stat-value" style="color: #059669;">${formatTime(record.productiveTime)}</div>
+                                </div>
+                                <div class="history-stat" style="background: #fee2e2;">
+                                    <div class="history-stat-label">Paradas</div>
+                                    <div class="history-stat-value" style="color: #dc2626;">${formatTime(stopTimeMs)}</div>
+                                </div>
+                            </div>
+                            <div class="history-actions">
+                                <button class="btn-success" onclick='sendWhatsApp(${JSON.stringify(record)})'>📱 WhatsApp</button>
+                                <button class="btn-outline" onclick="toggleDetails(${record.id})"><span id="toggle-${record.id}">👁️ Ver Detalhes</span></button>
+                            </div>
+                        </div>
+                        <div class="history-details" id="details-${record.id}">
+                            ${record.stopEvents.length > 0 ? `
+                                <div style="margin-bottom: 12px; font-weight: bold;">⚠️ Paradas (${record.stopEvents.length}):</div>
+                                <div class="table-wrapper">
+                                    <table>
+                                        <thead><tr><th>#</th><th>Início</th><th>Fim</th><th>Duração</th><th>Motivo</th></tr></thead>
+                                        <tbody>
+                                            ${record.stopEvents.map((event, idx) => `
+                                                <tr>
+                                                    <td><strong>${idx + 1}</strong></td>
+                                                    <td class="mono">${formatTime(event.startTime)}</td>
+                                                    <td class="mono">${formatTime(event.endTime)}</td>
+                                                    <td class="mono" style="color: #dc2626; font-weight: bold;">${formatTime(event.duration)}</td>
+                                                    <td>${escapeHtml(event.reason)}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ` : '<div style="text-align: center; padding: 24px; color: #6b7280;">Sem paradas</div>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function toggleDetails(id) {
+            const details = document.getElementById(`details-${id}`);
+            const toggle = document.getElementById(`toggle-${id}`);
+            if (details.classList.contains('active')) {
+                details.classList.remove('active');
+                toggle.textContent = '👁️ Ver Detalhes';
+            } else {
+                details.classList.add('active');
+                toggle.textContent = '🙈 Ocultar';
+            }
+        }
+        
+        function clearHistoryPrompt() {
+            if (state.history.length === 0) {
+                alert('⚠️ Sem registros!');
+                return;
+            }
+            elements.passwordModal.classList.add('active');
+            elements.passwordInput.value = '';
+            setTimeout(() => {
+                elements.passwordInput.focus();
+            }, 100);
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function cancelPassword() {
+            elements.passwordModal.classList.remove('active');
+            elements.passwordInput.value = '';
+            document.body.style.overflow = '';
+        }
+        
+        function confirmPassword() {
+            const password = elements.passwordInput.value.trim().toUpperCase();
+            
+            if (password === MASTER_PASSWORD) {
+                state.history = [];
+                saveHistory();
+                renderHistory();
+                elements.passwordModal.classList.remove('active');
+                elements.passwordInput.value = '';
+                document.body.style.overflow = '';
+                alert('✅ Histórico limpo!');
+            } else {
+                alert('❌ Senha incorreta!');
+                elements.passwordInput.value = '';
+                elements.passwordInput.focus();
+            }
+        }
+        
+        elements.passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                confirmPassword();
+            }
+        });
+        
+        loadHistory();
+        
+        // PWA: Service Worker Registration (SEM botão de instalação)
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'vli-cronometro-v3.4-clean-whatsapp';
+                const urlsToCache = ['./']; 
+                
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+                    );
+                    self.skipWaiting();
+                });
+                
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request).then(response => {
+                            return response || fetch(event.request).then(fetchResponse => {
+                                return caches.open(CACHE_NAME).then(cache => {
+                                    cache.put(event.request, fetchResponse.clone());
+                                    return fetchResponse;
+                                });
+                            });
+                        }).catch(() => {
+                            return caches.match('./');
+                        })
+                    );
+                });
+                
+                self.addEventListener('activate', event => {
+                    event.waitUntil(
+                        caches.keys().then(cacheNames => {
+                            return Promise.all(
+                                cacheNames.map(cacheName => {
+                                    if (cacheName !== CACHE_NAME) {
+                                        return caches.delete(cacheName);
+                                    }
+                                })
+                            );
+                        })
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(swUrl).then(registration => {
+                console.log('✅ Service Worker registrado - PWA ativo!', registration);
+            }).catch(error => {
+                console.log('ℹ️ Service Worker não registrado:', error);
+            });
+        }
+        
+        // Event Listeners para iOS Safari (mais confiável que onclick inline)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botões principais
+            elements.startBtn.addEventListener('click', startTimer);
+            elements.pauseBtn.addEventListener('click', pauseTimer);
+            elements.finishBtn.addEventListener('click', finishTimer);
+            
+            // Prevenir comportamento padrão em iOS
+            elements.startBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                startTimer();
+            }, { passive: false });
+        });
+        
+        console.log('✅ Cronômetro VLI carregado com sucesso!');
+    </script>
+</body>
+</html>
