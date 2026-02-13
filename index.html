@@ -512,19 +512,18 @@
         .reason-buttons { 
             display: grid; 
             gap: 10px; 
-            margin-bottom: 16px;
+            margin-bottom: 0;
         }
         
         /* Área de botões no modal */
         .modal-actions {
             background: white;
-            padding: 16px 0;
-            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); /* Safe-area iOS */
+            padding-top: 20px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
             border-top: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-top: 20px;
         }
         
         /* Tablet */
@@ -1359,6 +1358,10 @@
             // PAUSA O CRONÔMETRO
             state.isRunning = false;
             state.isPaused = true;
+            
+            // NOVO: Recalcula o tempo ANTES de pausar para garantir valor correto
+            recalculateTimeFromTimestamp();
+            
             state.currentStopStart = state.totalTime;
             state.pauseStartTime = Date.now(); // NOVO: registra quando pausou
             
@@ -1385,6 +1388,10 @@
                 // RESTAURA PROTEÇÕES quando modal fecha
                 document.body.style.overscrollBehavior = 'contain';
                 document.body.style.touchAction = 'pan-y';
+                
+                // NOVO: Calcula o tempo que ficou pausado e adiciona ao pausedTime
+                const pauseDuration = Date.now() - state.pauseStartTime;
+                state.pausedTime += pauseDuration;
                 
                 // RETOMA O CRONÔMETRO
                 state.isRunning = true;
@@ -1421,9 +1428,10 @@
             document.body.style.overscrollBehavior = 'contain';
             document.body.style.touchAction = 'pan-y';
             
-            // NOVO: Calcula o tempo que ficou pausado
-            const pauseDuration = Date.now() - state.pauseStartTime;
-            state.pausedTime += pauseDuration;
+            // NOVO: Recalcula o tempo atual ANTES de gravar a parada
+            const now = Date.now();
+            const elapsed = now - state.startTimestamp - state.pausedTime;
+            state.totalTime = Math.max(0, elapsed);
             
             const stopEvent = {
                 id: Date.now() + Math.random(),
@@ -1435,6 +1443,9 @@
             };
             
             state.stopEvents.push(stopEvent);
+            
+            // NOVO: Adiciona o tempo da parada ao pausedTime
+            state.pausedTime += stopEvent.duration;
             
             // RETOMA O CRONÔMETRO
             state.isRunning = true;
