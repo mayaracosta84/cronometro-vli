@@ -1018,7 +1018,11 @@
             intervalId: null, 
             selectedReason: '', 
             history: [],
-            startDateTime: '' // Armazena internamente a data/hora de início
+            startDateTime: '', // Armazena internamente a data/hora de início
+            startTimestamp: null, // Timestamp real de quando começou
+            pausedTime: 0, // Tempo total pausado
+            pauseStartTime: null, // Timestamp de quando pausou
+            wakeLock: null // Wake Lock para manter tela ativa
         };
         
         const elements = {
@@ -1073,6 +1077,54 @@
             div.textContent = text;
             return div.innerHTML;
         }
+        
+        // ===== WAKE LOCK & RECÁLCULO DE TEMPO =====
+        
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    state.wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('🔓 Wake Lock ativado - tela não vai dormir!');
+                    
+                    state.wakeLock.addEventListener('release', () => {
+                        console.log('🔒 Wake Lock liberado');
+                    });
+                } catch (err) {
+                    console.warn('⚠️ Wake Lock não disponível:', err);
+                }
+            } else {
+                console.warn('⚠️ Wake Lock API não suportada neste navegador');
+            }
+        }
+        
+        function releaseWakeLock() {
+            if (state.wakeLock !== null) {
+                state.wakeLock.release()
+                    .then(() => {
+                        state.wakeLock = null;
+                        console.log('✅ Wake Lock liberado');
+                    });
+            }
+        }
+        
+        function recalculateTimeFromTimestamp() {
+            if (state.isRunning && state.startTimestamp) {
+                const now = Date.now();
+                const elapsed = now - state.startTimestamp - state.pausedTime;
+                state.totalTime = Math.max(0, elapsed);
+                updateDisplay();
+            }
+        }
+        
+        // Detecta quando o app volta a ficar visível (saiu de background)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && state.isRunning) {
+                console.log('👁️ App voltou - recalculando tempo...');
+                recalculateTimeFromTimestamp();
+            }
+        });
+        
+        // ===== FIM WAKE LOCK =====
         
         function updateDisplay() {
             elements.timerDisplay.textContent = formatTime(state.totalTime);
@@ -1192,6 +1244,13 @@
             const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
             state.startDateTime = localDateTime;
             
+            // NOVO: Inicia timestamp para cálculo preciso
+            state.startTimestamp = Date.now();
+            state.pausedTime = 0;
+            
+            // NOVO: Ativa Wake Lock para manter tela ligada
+            requestWakeLock();
+            
             elements.userName.disabled = true;
             elements.vagaoType.disabled = true;
             elements.startBtn.classList.add('hidden');
@@ -1201,15 +1260,16 @@
             elements.statusDot.className = 'status-dot running';
             elements.statusText.textContent = 'Cronômetro Rodando';
             
+            // MODIFICADO: Usa timestamp ao invés de incremento
             state.intervalId = setInterval(() => {
-                state.totalTime += 10;
-                updateDisplay();
-            }, 10);
+                recalculateTimeFromTimestamp();
+            }, 100); // Atualiza a cada 100ms para ser mais responsivo
         }
         
         function pauseTimer() {
             state.isPaused = true;
             state.currentStopStart = state.totalTime;
+            state.pauseStartTime = Date.now(); // NOVO: registra quando pausou
             elements.statusDot.className = 'status-dot paused';
             elements.statusText.textContent = 'Aguardando Justificativa';
             elements.pauseBtn.disabled = true;
@@ -1250,6 +1310,10 @@
                 alert('⚠️ Selecione o motivo da parada!');
                 return;
             }
+            
+            // NOVO: Calcula o tempo que ficou pausado
+            const pauseDuration = Date.now() - state.pauseStartTime;
+            state.pausedTime += pauseDuration;
             
             const stopEvent = {
                 id: Date.now() + Math.random(),
@@ -1302,6 +1366,10 @@
             elements.confirmFinishModal.classList.remove('active');
             
             clearInterval(state.intervalId);
+            
+            // NOVO: Libera Wake Lock
+            releaseWakeLock();
+            
             const now = new Date();
             const endDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
             const stopTimeMs = state.stopEvents.reduce((sum, event) => sum + event.duration, 0);
@@ -1323,6 +1391,7 @@
             saveHistory();
             renderHistory();
             
+            // NOVO: Reseta também os timestamps
             state.totalTime = 0;
             state.isRunning = false;
             state.isPaused = false;
@@ -1330,6 +1399,9 @@
             state.currentStopStart = null;
             state.stopEvents = [];
             state.startDateTime = '';
+            state.startTimestamp = null;
+            state.pausedTime = 0;
+            
             elements.userName.value = '';
             elements.vagaoType.value = '';
             elements.userName.disabled = false;
@@ -1576,12 +1648,12 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             const htmlContent = document.documentElement.outerHTML;
             
             const swCode = `
-                const CACHE_NAME = 'vli-cronometro-v3.6-true-offline';
+                const CACHE_NAME = 'vli-cronometro-v3.8-wake-lock';
                 const HTML_CONTENT = ${JSON.stringify(htmlContent)};
                 
                 // Cache inicial com o HTML embutido
                 self.addEventListener('install', event => {
-                    console.log('📦 Service Worker instalando v3.6...');
+                    console.log('📦 Service Worker instalando v3.8 WAKE-LOCK...');
                     event.waitUntil(
                         caches.open(CACHE_NAME).then(cache => {
                             console.log('💾 Salvando HTML no cache...');
@@ -1603,34 +1675,54 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
                     // Para requisições do mesmo domínio (HTML)
                     if (url.origin === self.location.origin) {
                         event.respondWith(
+                            // CACHE FIRST - SEMPRE busca do cache primeiro
                             caches.match(event.request).then(cachedResponse => {
                                 if (cachedResponse) {
-                                    console.log('✅ Servindo do cache:', event.request.url);
+                                    console.log('✅ CACHE-FIRST: Servindo do cache:', event.request.url);
                                     return cachedResponse;
                                 }
                                 
-                                // Se não tiver no cache, tenta buscar da rede
-                                return fetch(event.request).then(fetchResponse => {
-                                    // Salva no cache para próximas vezes
-                                    return caches.open(CACHE_NAME).then(cache => {
-                                        cache.put(event.request, fetchResponse.clone());
+                                // Se não tiver no cache, busca da rede
+                                console.log('🌐 Não está em cache, buscando da rede...');
+                                return fetch(event.request)
+                                    .then(fetchResponse => {
+                                        // Salva no cache para próximas vezes
+                                        if (fetchResponse && fetchResponse.status === 200) {
+                                            return caches.open(CACHE_NAME).then(cache => {
+                                                cache.put(event.request, fetchResponse.clone());
+                                                return fetchResponse;
+                                            });
+                                        }
                                         return fetchResponse;
+                                    })
+                                    .catch(() => {
+                                        // OFFLINE: retorna o HTML do root
+                                        console.log('🛜 OFFLINE - Fallback para HTML root');
+                                        return caches.match('/').then(rootResponse => {
+                                            if (rootResponse) {
+                                                return rootResponse;
+                                            }
+                                            // Último recurso: retorna HTML embutido
+                                            return new Response(HTML_CONTENT, {
+                                                headers: { 'Content-Type': 'text/html; charset=utf-8' }
+                                            });
+                                        });
                                     });
-                                }).catch(() => {
-                                    // OFFLINE: retorna o HTML salvo
-                                    console.log('🛜 OFFLINE - Servindo HTML do cache');
-                                    return caches.match('/');
-                                });
                             })
                         );
                     } else {
-                        // Para requisições externas (imagens, etc), deixa passar
-                        event.respondWith(fetch(event.request));
+                        // Para requisições externas (CDN, imagens externas), deixa passar
+                        event.respondWith(
+                            fetch(event.request).catch(() => {
+                                // Se falhar, retorna resposta vazia
+                                return new Response('', { status: 200 });
+                            })
+                        );
                     }
                 });
                 
                 self.addEventListener('activate', event => {
-                    console.log('🔄 Service Worker ativando v3.6...');
+                    console.log('🔄 Service Worker ativando v3.8...');
                     event.waitUntil(
                         caches.keys().then(cacheNames => {
                             return Promise.all(
@@ -1642,7 +1734,7 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
                                 })
                             );
                         }).then(() => {
-                            console.log('✅ Service Worker v3.6 ativo!');
+                            console.log('✅ Service Worker v3.8 ativo!');
                             return self.clients.claim();
                         })
                     );
@@ -1653,7 +1745,7 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             const swUrl = URL.createObjectURL(blob);
             
             navigator.serviceWorker.register(swUrl).then(registration => {
-                console.log('✅ Service Worker v3.6 registrado!');
+                console.log('✅ Service Worker v3.8 WAKE-LOCK registrado!');
                 console.log('📱 App pronto para funcionar OFFLINE!');
                 
                 // Atualização automática
