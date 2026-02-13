@@ -954,7 +954,7 @@
                 <button class="reason-btn" onclick="selectReason(this, 'Aguardando Material')">📦 Aguardando Material</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Recuo de Vagões')">🚂 Recuo de Vagões</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Falha na Locomotiva')">⚙️ Falha na Locomotiva</button>
-                <button class="reason-btn" onclick="selectReason(this, 'Manuten  ão Corretiva')">🔨 Manutenção Corretiva</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Manuten����ão Corretiva')">🔨 Manutenção Corretiva</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Troca de maquinista VLI')">👨‍✈️ Troca de maquinista VLI</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Troca de Operador Silo (Vale)')">👷 Troca de Operador Silo (Vale)</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Limpeza de Via')">🧹 Limpeza de Via</button>
@@ -1570,44 +1570,80 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
         
         loadHistory();
         
-        // PWA: Service Worker Registration (SEM botão de instalação)
+        // PWA: Service Worker Registration - VERSÃO OFFLINE 100%
         if ('serviceWorker' in navigator) {
+            // Captura o HTML COMPLETO da página atual
+            const htmlContent = document.documentElement.outerHTML;
+            
             const swCode = `
-                const CACHE_NAME = 'vli-cronometro-v3.4-clean-whatsapp';
-                const urlsToCache = ['./']; 
+                const CACHE_NAME = 'vli-cronometro-v3.6-true-offline';
+                const HTML_CONTENT = ${JSON.stringify(htmlContent)};
                 
+                // Cache inicial com o HTML embutido
                 self.addEventListener('install', event => {
+                    console.log('📦 Service Worker instalando v3.6...');
                     event.waitUntil(
-                        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-                    );
-                    self.skipWaiting();
-                });
-                
-                self.addEventListener('fetch', event => {
-                    event.respondWith(
-                        caches.match(event.request).then(response => {
-                            return response || fetch(event.request).then(fetchResponse => {
-                                return caches.open(CACHE_NAME).then(cache => {
-                                    cache.put(event.request, fetchResponse.clone());
-                                    return fetchResponse;
-                                });
+                        caches.open(CACHE_NAME).then(cache => {
+                            console.log('💾 Salvando HTML no cache...');
+                            // Salva o HTML como resposta no cache
+                            const htmlResponse = new Response(HTML_CONTENT, {
+                                headers: { 'Content-Type': 'text/html; charset=utf-8' }
                             });
-                        }).catch(() => {
-                            return caches.match('./');
+                            return cache.put('/', htmlResponse);
+                        }).then(() => {
+                            console.log('✅ HTML em cache! Pronto para offline!');
+                            self.skipWaiting();
                         })
                     );
                 });
                 
+                self.addEventListener('fetch', event => {
+                    const url = new URL(event.request.url);
+                    
+                    // Para requisições do mesmo domínio (HTML)
+                    if (url.origin === self.location.origin) {
+                        event.respondWith(
+                            caches.match(event.request).then(cachedResponse => {
+                                if (cachedResponse) {
+                                    console.log('✅ Servindo do cache:', event.request.url);
+                                    return cachedResponse;
+                                }
+                                
+                                // Se não tiver no cache, tenta buscar da rede
+                                return fetch(event.request).then(fetchResponse => {
+                                    // Salva no cache para próximas vezes
+                                    return caches.open(CACHE_NAME).then(cache => {
+                                        cache.put(event.request, fetchResponse.clone());
+                                        return fetchResponse;
+                                    });
+                                }).catch(() => {
+                                    // OFFLINE: retorna o HTML salvo
+                                    console.log('🛜 OFFLINE - Servindo HTML do cache');
+                                    return caches.match('/');
+                                });
+                            })
+                        );
+                    } else {
+                        // Para requisições externas (imagens, etc), deixa passar
+                        event.respondWith(fetch(event.request));
+                    }
+                });
+                
                 self.addEventListener('activate', event => {
+                    console.log('🔄 Service Worker ativando v3.6...');
                     event.waitUntil(
                         caches.keys().then(cacheNames => {
                             return Promise.all(
                                 cacheNames.map(cacheName => {
                                     if (cacheName !== CACHE_NAME) {
+                                        console.log('🗑️ Limpando cache antigo:', cacheName);
                                         return caches.delete(cacheName);
                                     }
                                 })
                             );
+                        }).then(() => {
+                            console.log('✅ Service Worker v3.6 ativo!');
+                            return self.clients.claim();
                         })
                     );
                 });
@@ -1617,9 +1653,20 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             const swUrl = URL.createObjectURL(blob);
             
             navigator.serviceWorker.register(swUrl).then(registration => {
-                console.log('✅ Service Worker registrado - PWA ativo!', registration);
+                console.log('✅ Service Worker v3.6 registrado!');
+                console.log('📱 App pronto para funcionar OFFLINE!');
+                
+                // Atualização automática
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log('🆕 Nova versão! Recarregue a página.');
+                        }
+                    });
+                });
             }).catch(error => {
-                console.log('ℹ️ Service Worker não registrado:', error);
+                console.error('❌ Erro ao registrar Service Worker:', error);
             });
         }
         
