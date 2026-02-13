@@ -984,7 +984,7 @@
     <!-- Modal de Confirmação de Finalização -->
     <div class="modal" id="confirmFinishModal">
         <div class="modal-content">
-            <div class="modal-title">⚠️ Confirmar Finalização</div>
+            <div class="modal-title">���️ Confirmar Finalização</div>
             <div class="alert alert-danger">
                 <strong>⚠️ Atenção!</strong><br>
                 Deseja realmente FINALIZAR este carregamento?<br><br>
@@ -1752,22 +1752,30 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             const htmlContent = document.documentElement.outerHTML;
             
             const swCode = `
-                const CACHE_NAME = 'vli-cronometro-v3.10-timer-continuous-fix';
+                const CACHE_NAME = 'vli-cronometro-v3.11-offline-fix';
                 const HTML_CONTENT = ${JSON.stringify(htmlContent)};
                 
-                // Cache inicial com o HTML embutido
+                // Cache inicial com o HTML embutido em TODOS os caminhos possíveis
                 self.addEventListener('install', event => {
-                    console.log('📦 Service Worker instalando v3.10 TIMER-CONTINUOUS-FIX...');
+                    console.log('📦 Service Worker instalando v3.11 OFFLINE-FIX...');
                     event.waitUntil(
                         caches.open(CACHE_NAME).then(cache => {
-                            console.log('💾 Salvando HTML no cache...');
+                            console.log('💾 Salvando HTML em TODOS os caminhos possíveis...');
                             // Salva o HTML como resposta no cache
                             const htmlResponse = new Response(HTML_CONTENT, {
                                 headers: { 'Content-Type': 'text/html; charset=utf-8' }
                             });
-                            return cache.put('/', htmlResponse);
+                            // Cacheia em TODOS os caminhos possíveis do GitHub Pages
+                            return Promise.all([
+                                cache.put('/', htmlResponse.clone()),
+                                cache.put('/cronometro-vli/', htmlResponse.clone()),
+                                cache.put('/cronometro-vli/index.html', htmlResponse.clone()),
+                                cache.put('/cronometro-vli/cronometro-vli.html', htmlResponse.clone()),
+                                cache.put('/index.html', htmlResponse.clone()),
+                                cache.put(self.location.pathname, htmlResponse.clone())
+                            ]);
                         }).then(() => {
-                            console.log('✅ HTML em cache! Pronto para offline!');
+                            console.log('✅ HTML em cache para TODOS os caminhos! Pronto para offline!');
                             self.skipWaiting();
                         })
                     );
@@ -1786,7 +1794,7 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
                                     return cachedResponse;
                                 }
                                 
-                                // Se não tiver no cache, busca da rede
+                                // Se não tiver no cache exato, tenta buscar da rede
                                 console.log('🌐 Não está em cache, buscando da rede...');
                                 return fetch(event.request)
                                     .then(fetchResponse => {
@@ -1800,16 +1808,26 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
                                         return fetchResponse;
                                     })
                                     .catch(() => {
-                                        // OFFLINE: retorna o HTML do root
-                                        console.log('🛜 OFFLINE - Fallback para HTML root');
-                                        return caches.match('/').then(rootResponse => {
-                                            if (rootResponse) {
-                                                return rootResponse;
-                                            }
-                                            // Último recurso: retorna HTML embutido
-                                            return new Response(HTML_CONTENT, {
-                                                headers: { 'Content-Type': 'text/html; charset=utf-8' }
-                                            });
+                                        // OFFLINE: retorna o HTML de qualquer caminho cacheado
+                                        console.log('🛜 OFFLINE - Tentando fallback...');
+                                        return caches.open(CACHE_NAME).then(cache => {
+                                            // Tenta múltiplos caminhos
+                                            return cache.match('/cronometro-vli/')
+                                                .then(r => r || cache.match('/cronometro-vli/index.html'))
+                                                .then(r => r || cache.match('/cronometro-vli/cronometro-vli.html'))
+                                                .then(r => r || cache.match('/'))
+                                                .then(r => r || cache.match('/index.html'))
+                                                .then(rootResponse => {
+                                                    if (rootResponse) {
+                                                        console.log('✅ OFFLINE: Servindo do cache!');
+                                                        return rootResponse;
+                                                    }
+                                                    // Último recurso: retorna HTML embutido
+                                                    console.log('⚠️ OFFLINE: Usando HTML embutido como último recurso');
+                                                    return new Response(HTML_CONTENT, {
+                                                        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+                                                    });
+                                                });
                                         });
                                     });
                             })
@@ -1826,7 +1844,7 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
                 });
                 
                 self.addEventListener('activate', event => {
-                    console.log('🔄 Service Worker ativando v3.10...');
+                    console.log('🔄 Service Worker ativando v3.11...');
                     event.waitUntil(
                         caches.keys().then(cacheNames => {
                             return Promise.all(
@@ -1849,7 +1867,7 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             const swUrl = URL.createObjectURL(blob);
             
             navigator.serviceWorker.register(swUrl).then(registration => {
-                console.log('✅ Service Worker v3.10 TIMER-CONTINUOUS-FIX registrado!');
+                console.log('✅ Service Worker v3.11 OFFLINE-FIX registrado!');
                 console.log('📱 App pronto para funcionar OFFLINE!');
                 
                 // Atualização automática
