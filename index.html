@@ -436,22 +436,24 @@
             bottom: 0; 
             background: rgba(0,0,0,0.8); 
             z-index: 9999; 
-            padding: 5vh 16px;
-            overflow-y: scroll !important;
-            -webkit-overflow-scrolling: touch;
+            padding: 16px; 
+            overflow-y: auto;
         }
         
         .modal.active { 
-            display: block;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
         }
         
         .modal-content { 
             background: white; 
             border-radius: 20px; 
             padding: 24px; 
-            max-width: 600px;
+            max-width: 100%; 
             width: 100%; 
-            margin: 0 auto;
+            max-height: 90vh; 
+            overflow-y: auto; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
         
