@@ -984,7 +984,7 @@
     <!-- Modal de Confirmação de Finalização -->
     <div class="modal" id="confirmFinishModal">
         <div class="modal-content">
-            <div class="modal-title">����️ Confirmar Finalização</div>
+            <div class="modal-title">�����️ Confirmar Finalização</div>
             <div class="alert alert-danger">
                 <strong>⚠️ Atenção!</strong><br>
                 Deseja realmente FINALIZAR este carregamento?<br><br>
@@ -1011,7 +1011,7 @@
                 <button class="reason-btn" onclick="selectReason(this, 'Falha na Locomotiva')">⚙️ Falha na Locomotiva</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Manutenção Corretiva')">🔨 Manutenção Corretiva</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Troca de maquinista VLI')">👨‍✈️ Troca de maquinista VLI</button>
-                <button class="reason-btn" onclick="selectReason(this, 'Troca de Operador Silo (Vale)')">👷 Troca de Operador Silo (Vale)</button>
+                <button class="reason-btn" onclick="selectReason(this, 'Teste de Cauda')">🔍 Teste de Cauda</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Limpeza de Via')">🧹 Limpeza de Via</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Condições Climáticas')">🌧️ Condições Climáticas</button>
                 <button class="reason-btn" onclick="selectReason(this, 'Não informado pela Vale')">❓ Não informado pela Vale</button>
@@ -1877,7 +1877,7 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
         // PWA: Service Worker Registration - VERSÃO SIMPLES E LEVE
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(registration => {
-                console.log('✅ Service Worker v3.13 registrado!');
+                console.log('✅ Service Worker v3.15 registrado!');
                 console.log('📱 App pronto para funcionar OFFLINE!');
                 
                 // Atualização automática
@@ -1916,6 +1916,8 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
                 e.preventDefault();
                 finishTimer();
             }, { passive: false });
+            
+            console.log('✅ Event listeners configurados com sucesso!');
             
             // RESTAURA O ESTADO após configurar event listeners
             loadCurrentState();
