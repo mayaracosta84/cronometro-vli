@@ -1619,7 +1619,9 @@
                             const elapsed = now - state.startTimestamp - state.pausedTime;
                             state.totalTime = elapsed;
                             
-                            state.intervalId = setInterval(updateTimer, 100);
+                            state.intervalId = setInterval(() => {
+                                recalculateTimeFromTimestamp();
+                            }, 100);
                             
                             elements.pauseBtn.classList.remove('hidden');
                             elements.finishBtn.classList.remove('hidden');
@@ -1628,13 +1630,15 @@
                         } else if (state.isPaused) {
                             elements.pauseBtn.classList.remove('hidden');
                             elements.finishBtn.classList.remove('hidden');
+                            elements.pauseBtn.disabled = true;
+                            elements.finishBtn.disabled = true;
                             elements.statusDot.className = 'status-dot paused';
                             elements.statusText.textContent = 'Pausado';
                             elements.currentStopsContainer.classList.remove('hidden');
                         }
                         
                         updateDisplay();
-                        renderCurrentStops();
+                        updateCurrentStops();
                     }
                     
                     console.log('✅ Estado restaurado!');
