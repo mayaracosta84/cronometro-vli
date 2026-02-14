@@ -1169,6 +1169,14 @@
                 const elapsed = now - state.startTimestamp;
                 state.totalTime = Math.max(0, elapsed);
                 updateDisplay();
+                
+                // Salva o estado a cada 5 segundos (50 chamadas × 100ms)
+                if (!recalculateTimeFromTimestamp.counter) recalculateTimeFromTimestamp.counter = 0;
+                recalculateTimeFromTimestamp.counter++;
+                if (recalculateTimeFromTimestamp.counter >= 50) {
+                    saveCurrentState();
+                    recalculateTimeFromTimestamp.counter = 0;
+                }
             }
         }
         
@@ -1352,6 +1360,8 @@
             state.intervalId = setInterval(() => {
                 recalculateTimeFromTimestamp();
             }, 100); // Atualiza a cada 100ms para ser mais responsivo
+            
+            saveCurrentState(); // SALVA O ESTADO
         }
         
         function pauseTimer() {
@@ -1370,6 +1380,8 @@
             elements.pauseBtn.disabled = true;
             elements.finishBtn.disabled = true;
             elements.stopReasonModal.classList.add('active');
+            
+            saveCurrentState(); // SALVA O ESTADO
         }
         
         function selectReason(btn, reason) {
@@ -1443,6 +1455,8 @@
             elements.statusDot.className = 'status-dot running';
             elements.statusText.textContent = 'Cronômetro Rodando';
             updateCurrentStops();
+            
+            saveCurrentState(); // SALVA O ESTADO
         }
         
         function updateCurrentStops() {
@@ -1520,6 +1534,8 @@
             elements.currentStopsContainer.classList.add('hidden');
             updateDisplay();
             
+            clearCurrentState(); // LIMPA O ESTADO SALVO
+            
             showSuccessMessage();
             
             setTimeout(() => {
@@ -1547,6 +1563,96 @@
                 state.history = [];
             }
         }
+        
+        // ===== PERSISTÊNCIA DO ESTADO ATUAL =====
+        function saveCurrentState() {
+            try {
+                const currentState = {
+                    totalTime: state.totalTime,
+                    isRunning: state.isRunning,
+                    isPaused: state.isPaused,
+                    hasStarted: state.hasStarted,
+                    currentStopStart: state.currentStopStart,
+                    stopEvents: state.stopEvents,
+                    startDateTime: state.startDateTime,
+                    startTimestamp: state.startTimestamp,
+                    pausedTime: state.pausedTime,
+                    pauseStartTime: state.pauseStartTime,
+                    userName: elements.userName.value,
+                    vagaoType: elements.vagaoType.value
+                };
+                localStorage.setItem('vli-cronometro-current', JSON.stringify(currentState));
+                console.log('💾 Estado salvo!');
+            } catch (e) {
+                console.error('Erro ao salvar estado:', e);
+            }
+        }
+        
+        function loadCurrentState() {
+            try {
+                const saved = localStorage.getItem('vli-cronometro-current');
+                if (saved) {
+                    const currentState = JSON.parse(saved);
+                    
+                    state.totalTime = currentState.totalTime || 0;
+                    state.isRunning = currentState.isRunning || false;
+                    state.isPaused = currentState.isPaused || false;
+                    state.hasStarted = currentState.hasStarted || false;
+                    state.currentStopStart = currentState.currentStopStart;
+                    state.stopEvents = currentState.stopEvents || [];
+                    state.startDateTime = currentState.startDateTime || '';
+                    state.startTimestamp = currentState.startTimestamp;
+                    state.pausedTime = currentState.pausedTime || 0;
+                    state.pauseStartTime = currentState.pauseStartTime;
+                    
+                    elements.userName.value = currentState.userName || '';
+                    elements.vagaoType.value = currentState.vagaoType || '';
+                    
+                    if (state.hasStarted) {
+                        elements.userName.disabled = true;
+                        elements.vagaoType.disabled = true;
+                        elements.startBtn.classList.add('hidden');
+                        elements.statusIndicator.classList.remove('hidden');
+                        
+                        if (state.isRunning && !state.isPaused) {
+                            const now = Date.now();
+                            const elapsed = now - state.startTimestamp - state.pausedTime;
+                            state.totalTime = elapsed;
+                            
+                            state.intervalId = setInterval(updateTimer, 100);
+                            
+                            elements.pauseBtn.classList.remove('hidden');
+                            elements.finishBtn.classList.remove('hidden');
+                            elements.statusDot.className = 'status-dot running';
+                            elements.statusText.textContent = 'Em Andamento';
+                        } else if (state.isPaused) {
+                            elements.pauseBtn.classList.remove('hidden');
+                            elements.finishBtn.classList.remove('hidden');
+                            elements.statusDot.className = 'status-dot paused';
+                            elements.statusText.textContent = 'Pausado';
+                            elements.currentStopsContainer.classList.remove('hidden');
+                        }
+                        
+                        updateDisplay();
+                        renderCurrentStops();
+                    }
+                    
+                    console.log('✅ Estado restaurado!');
+                }
+            } catch (e) {
+                console.error('Erro ao carregar estado:', e);
+            }
+        }
+        
+        function clearCurrentState() {
+            try {
+                localStorage.removeItem('vli-cronometro-current');
+                console.log('🗑️ Estado limpo!');
+            } catch (e) {
+                console.error('Erro ao limpar estado:', e);
+            }
+        }
+        // ===== FIM PERSISTÊNCIA =====
         
         function calculateStopPercentages(stopEvents, totalStopTime) {
             const reasonMap = {};
@@ -1745,11 +1851,12 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
         });
         
         loadHistory();
+        loadCurrentState(); // RESTAURA O ESTADO DO CRONÔMETRO
         
         // PWA: Service Worker Registration - VERSÃO SIMPLES E LEVE
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(registration => {
-                console.log('✅ Service Worker v3.12 registrado!');
+                console.log('✅ Service Worker v3.13 registrado!');
                 console.log('📱 App pronto para funcionar OFFLINE!');
                 
                 // Atualização automática
