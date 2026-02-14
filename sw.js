@@ -81,8 +81,7 @@ self.addEventListener('fetch', event => {
                             console.log('🛜 OFFLINE - buscando qualquer HTML do cache');
                             return caches.match('/cronometro-vli/')
                                 .then(r => r || caches.match('/cronometro-vli/index.html'))
-                                .then(r => r || caches.match('./'))
-                                .then(r => r || caches.match('./index.html'))
+                                .then(r => r || caches.match('/'))
                                 .then(r => r || new Response('Offline - Recarregue quando estiver online', {
                                     headers: { 'Content-Type': 'text/html' }
                                 }));
