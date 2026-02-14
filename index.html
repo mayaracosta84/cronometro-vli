@@ -1381,9 +1381,9 @@
             elements.finishBtn.disabled = true;
             elements.stopReasonModal.classList.add('active');
             
-            // CENTRALIZA O MODAL NA TELA
+            // MOVE O MODAL PARA O TOPO DA TELA
             setTimeout(() => {
-                elements.stopReasonModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                elements.stopReasonModal.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
             
             saveCurrentState(); // SALVA O ESTADO
@@ -1486,9 +1486,9 @@
             // Abre o modal de confirmação ao invés do confirm()
             elements.confirmFinishModal.classList.add('active');
             
-            // CENTRALIZA O MODAL NA TELA
+            // MOVE O MODAL PARA O TOPO DA TELA
             setTimeout(() => {
-                elements.confirmFinishModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                elements.confirmFinishModal.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
         }
         
@@ -1725,9 +1725,9 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             // Exibir modal
             elements.whatsappModal.classList.add('active');
             
-            // CENTRALIZA O MODAL NA TELA
+            // MOVE O MODAL PARA O TOPO DA TELA
             setTimeout(() => {
-                elements.whatsappModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                elements.whatsappModal.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
         }
         
@@ -1837,9 +1837,9 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             elements.passwordModal.classList.add('active');
             elements.passwordInput.value = '';
             
-            // CENTRALIZA O MODAL NA TELA
+            // MOVE O MODAL PARA O TOPO DA TELA
             setTimeout(() => {
-                elements.passwordModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                elements.passwordModal.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 elements.passwordInput.focus();
             }, 100);
         }
