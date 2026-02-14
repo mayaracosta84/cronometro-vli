@@ -1855,7 +1855,6 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
         });
         
         loadHistory();
-        loadCurrentState(); // RESTAURA O ESTADO DO CRONÔMETRO
         
         // PWA: Service Worker Registration - VERSÃO SIMPLES E LEVE
         if ('serviceWorker' in navigator) {
@@ -1889,6 +1888,19 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
                 e.preventDefault();
                 startTimer();
             }, { passive: false });
+            
+            elements.pauseBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                pauseTimer();
+            }, { passive: false });
+            
+            elements.finishBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                finishTimer();
+            }, { passive: false });
+            
+            // RESTAURA O ESTADO após configurar event listeners
+            loadCurrentState();
         });
         
         console.log('✅ Cronômetro VLI carregado com sucesso!');
