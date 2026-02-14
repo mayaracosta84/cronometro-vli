@@ -1,13 +1,34 @@
-const CACHE_NAME = 'vli-cronometro-v3.12';
+const CACHE_NAME = 'vli-cronometro-v3.13';
 
-// Instala e ativa imediatamente
+const urlsToCache = [
+    './',
+    './index.html',
+    '/cronometro-vli/',
+    '/cronometro-vli/index.html'
+];
+
+// Instala e faz PRECACHE do HTML
 self.addEventListener('install', event => {
-    console.log('📦 Service Worker v3.12 instalando...');
-    self.skipWaiting();
+    console.log('📦 Service Worker v3.13 instalando com PRECACHE...');
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => {
+                console.log('💾 Fazendo precache dos arquivos essenciais...');
+                return cache.addAll(urlsToCache);
+            })
+            .then(() => {
+                console.log('✅ Precache concluído!');
+                return self.skipWaiting();
+            })
+            .catch(err => {
+                console.error('❌ Erro no precache:', err);
+                return self.skipWaiting();
+            })
+    );
 });
 
 self.addEventListener('activate', event => {
-    console.log('🔄 Service Worker v3.12 ativando...');
+    console.log('🔄 Service Worker v3.13 ativando...');
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
@@ -19,7 +40,7 @@ self.addEventListener('activate', event => {
                 })
             );
         }).then(() => {
-            console.log('✅ Service Worker v3.12 ativo!');
+            console.log('✅ Service Worker v3.13 ativo!');
             return self.clients.claim();
         })
     );
@@ -60,7 +81,8 @@ self.addEventListener('fetch', event => {
                             console.log('🛜 OFFLINE - buscando qualquer HTML do cache');
                             return caches.match('/cronometro-vli/')
                                 .then(r => r || caches.match('/cronometro-vli/index.html'))
-                                .then(r => r || caches.match('/'))
+                                .then(r => r || caches.match('./'))
+                                .then(r => r || caches.match('./index.html'))
                                 .then(r => r || new Response('Offline - Recarregue quando estiver online', {
                                     headers: { 'Content-Type': 'text/html' }
                                 }));
