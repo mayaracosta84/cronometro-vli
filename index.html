@@ -1381,6 +1381,11 @@
             elements.finishBtn.disabled = true;
             elements.stopReasonModal.classList.add('active');
             
+            // CENTRALIZA O MODAL NA TELA
+            setTimeout(() => {
+                elements.stopReasonModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+            
             saveCurrentState(); // SALVA O ESTADO
         }
         
@@ -1480,6 +1485,11 @@
         function finishTimer() {
             // Abre o modal de confirmação ao invés do confirm()
             elements.confirmFinishModal.classList.add('active');
+            
+            // CENTRALIZA O MODAL NA TELA
+            setTimeout(() => {
+                elements.confirmFinishModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
         
         function confirmFinishTimer() {
@@ -1714,6 +1724,11 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             
             // Exibir modal
             elements.whatsappModal.classList.add('active');
+            
+            // CENTRALIZA O MODAL NA TELA
+            setTimeout(() => {
+                elements.whatsappModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
         
         function closeWhatsAppModal() {
@@ -1821,7 +1836,10 @@ _Relatório gerado automaticamente pelo SYSTEMAY_`;
             }
             elements.passwordModal.classList.add('active');
             elements.passwordInput.value = '';
+            
+            // CENTRALIZA O MODAL NA TELA
             setTimeout(() => {
+                elements.passwordModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 elements.passwordInput.focus();
             }, 100);
         }
